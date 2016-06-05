@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script language="JavaScript" src="js/jquery.min.js"></script>
+<script language="JavaScript" src="js/config.js"></script>
+<script language="JavaScript" src="js/layer/layer.js"></script>
+
+<body>
+<table border="0">
+<div id="title"></div>
+    </p>
+    <tr>
+        <td style="font-size: 0.75em">用户昵称:</td>
+        <td><input type="text" id="name"></td>
+    </tr>
+
+    <tr>
+        <td style="font-size: 0.75em">用户手机号:</td>
+        <td><input type="text" id="mobile"></td>
+        <td><input type="button" id="search" value="搜索" onclick="addPeople();"></td>
+        <td><input type="button" id="add" value="添加经销商" onclick="goLink();"></td>
+    </tr>
+
+
+    <tr>
+        <td style="font-size: 0.75em">结算方式:</td>
+        <td>
+            <select id="type">
+                <option value="1">按比率结算</option>
+                <option value="2">按单笔成交结算</option>
+
+            </select>
+
+        </td>
+    </tr>
+
+
+</table>
+</body>
+<script>
+
+    var bossId = GetRequest("uuid");
+    var bossName = GetRequest("nickName");
+    var userId = GetRequest("userId");
+    console.info(userId);
+    $("#title").html("<label style='font-size: 0.75em'>设定"+decodeURI(bossName)+"的下级分销商：</labl>")
+    function GetRequest(strName)
+    {
+        var strHref = window.location.href; //获取Url字串
+        var intPos = strHref.indexOf("?");  // 参数开始位置
+        var strRight = strHref.substr(intPos + 1);
+        var arrTmp = strRight.split(","); //参数分割符
+        for(var i = 0; i < arrTmp.length; i++)
+        {
+            var arrTemp = arrTmp[i].split("=");
+            if(arrTemp[0].toUpperCase() == strName.toUpperCase()) return arrTemp[1];
+        }
+        return "";
+    }
+
+    function addPeople(){
+        var flag = 0;
+        var nickName = $("#name").val();
+        var mobile = $("#mobile").val();
+        console.info(nickName);
+        jQuery.ajax({
+            type: "GET",
+            url: baseUrl+"/User/Search",
+            contentType:'application/json;charset=UTF-8',
+            data: {"nickName":nickName,"mobile":mobile,"fundingLevel":"2"},
+            dataType:"json",
+            success:function (data, status, jqXHR) {
+                var dataObj=eval("("+JSON.stringify(data.returnObject)+")");
+                for(var i=0,l=dataObj.length;i<l;i++){
+                    $('input[name="tlList"]').each(function(){
+                        if($(this).val()==dataObj[i].uuid){
+                            layer.msg('请勿重复添加用户', {icon: 5});
+                            flag = 1;
+                        }
+                    });
+                    if(flag==0){
+                        $("#result").append('<label><input name="tlList" type="checkbox" value='+dataObj[i].uuid+' / >'+dataObj[i].nickName+'</label></br>');
+                    }
+                }
+
+            },
+            error: ""
+        });
+    }
+
+    function goLink(){
+        var size =  $('input[name="tlList"]:checked').size();
+        if(size==0){
+            layer.msg('请至少选择一个用户', {icon: 5});
+            return;
+        }
+        var uuid = "";
+        $('input[name="tlList"]:checked').each(function(){
+            uuid = uuid+","+$(this).val();
+        });
+        jQuery.ajax({
+            type: "POST",
+            url: baseUrl+"/User/Funding/Level/Two",
+            contentType:'application/json;charset=UTF-8',
+            data:JSON.stringify({"uuid":uuid,"pid":userId,"type":$('#type').val()}),
+            dataType:"json",
+            success:function (data, status, jqXHR) {
+                layer.msg('添加成功', {icon: 4});
+            },
+            error:''
+    });
+    }
+</script>
+
+<div id="result">
+
+</div>
+
+</html>

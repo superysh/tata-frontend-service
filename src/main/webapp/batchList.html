@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<p lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+    </head>
+    <script language="JavaScript" src="js/jquery-1.11.3.min.js"></script>
+    <script language="JavaScript" src="js/jquery.pagination.js"></script>
+    <script language="JavaScript" src="js/layer/layer.js"></script>
+    <script language="JavaScript" src="js/config-all.js"></script>
+    <script language="JavaScript" src="js/tableExport.js"></script>
+    <script language="JavaScript" src="js/jquery.base64.js"></script>
+
+    <link href="css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <link href="js/layer/skin/layer.css" rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="css/pagination.css" />
+</p>
+</p>
+<label style="font-size: 0.8em">商品管理</label>
+<table style="font-size: 0.8em">
+    <tr>
+        <td>导出excel:<input type="button" id="exportButton" value="导出excel" onclick=doExport()></td>
+    </tr>
+</table>
+</p>
+</p>
+<table id="example" class="display" cellspacing="0" width="100%" class="table table-bordered table-striped table-hover" style="font-size: 0.75em;border-color:aliceblue;color:#7b7b7b" border="1">
+    <thead>
+    <tr>
+        <th align="center">Id</th>
+        <th align="center">优惠券编号</th>
+        <th align="center">优惠券价值</th>
+        <th align="center">创建时间</th>
+        <th align="center">所属店铺名称</th>
+        <th align="center">优惠券状态</th>
+    </tr>
+    </thead>
+
+</table>
+
+
+
+<div id="Pagination" style="float: right"></div>
+</body>
+<script language="javascript" type="text/javascript">
+
+    function view(id){
+        window.open("userDetail.html?uuid="+id);
+    }
+    function clear(id){
+        $("#"+id+"").val("");
+    }
+    function getTotal(){
+        var pageCount = 0;
+        jQuery.ajax({
+            type: "GET",
+            async: false,
+            url: baseUrl + "/Order/Orders/Backend/Count",
+            contentType: 'application/json;charset=UTF-8',
+            dataType: "json",
+            data: {"moduleId": 1},
+            success: function (data, status, jqXHR) {
+                pageCount= data;
+            },
+            error: ''
+        });
+        return pageCount;
+    }
+    var pageIndex =0;     //页索引
+    var pageSize =100;    //每页显示的条数
+    $("#Pagination").pagination(getTotal(), {
+        callback: PageCallback,
+        prev_text: '上一页',
+        next_text: '下一页',
+        items_per_page: pageSize,
+        num_display_entries: 2,
+        current_page: pageIndex,
+        num_edge_entries: 1
+    });
+    function PageCallback(index, jq) {
+        Init(index);
+    }
+    Init(0);
+    var format = function(time, format){
+        var t = new Date(time);
+        var tf = function(i){return (i < 10 ? '0' : '') + i};
+        return format.replace(/yyyy|MM|dd|HH|mm|ss/g, function(a){
+            switch(a){
+                case 'yyyy':
+                    return tf(t.getFullYear());
+                    break;
+                case 'MM':
+                    return tf(t.getMonth() + 1);
+                    break;
+                case 'mm':
+                    return tf(t.getMinutes());
+                    break;
+                case 'dd':
+                    return tf(t.getDate());
+                    break;
+                case 'HH':
+                    return tf(t.getHours());
+                    break;
+                case 'ss':
+                    return tf(t.getSeconds());
+                    break;
+            }
+        })
+    }
+    function GetRequest(strName)
+    {
+        var strHref = window.location.href; //获取Url字串
+        var intPos = strHref.indexOf("?");  // 参数开始位置
+        var strRight = strHref.substr(intPos + 1);
+        var arrTmp = strRight.split("&"); //参数分割符
+        for(var i = 0; i < arrTmp.length; i++)
+        {
+            var arrTemp = arrTmp[i].split("=");
+            if(arrTemp[0].toUpperCase() == strName.toUpperCase()) return arrTemp[1];
+        }
+        return "";
+    }
+    function Init(pageIndex) {
+        var name = GetRequest("shopName");
+        var num = GetRequest("num");
+        var ticketValue = GetRequest("ticketValue");
+        name = decodeURI(name);
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: baseUrl+'/User/Coupon/Coupon',
+            contentType:'application/json;charset=UTF-8',
+            data: JSON.stringify({"ticketValue": ticketValue,"shopName":name,"num":num}),
+            success: function(data) {
+                data = data.returnObject;
+                $("#example tr:gt(0)").remove();
+                if(data!=""){
+                    $.each(data,function(index,news){
+                        var status = news.recordStatus;
+                        if(status==1){
+                            status = "有效";
+                        }else{
+                            status = "无效";
+                        }
+
+                        $("#example").append("<tr bgcolor='white' align='center'><td>"+news.uuid+"</td><td align='center'>"+news.no+"</td><td align='center''>"+news.ticketValue+"</td><td align='center'>"+format(news.createTime, 'yyyy-MM-dd HH:mm:ss')+"</td><td align='center'>"+news.shopName+"</td><td align='center'>"+status+"</td></tr>");  //将返回的数据追加到表格
+                    });
+                }
+            }
+        });
+
+    }
+    function query(){
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: baseUrl+'/User/Users/Search',
+            contentType:'application/json;charset=UTF-8',
+            data:  JSON.stringify({"nickName": $("#nickName").val(),"mobile":$("#mobile").val()}),
+            success: function(data) {
+                console.info(data);
+                $("#example tr:gt(0)").remove();
+                if(data!=""){
+                    $.each(data,function(index,news){
+                        $("#example").append("<tr bgcolor='white' align='center'><td>"+news.uuid+"</td><td align='center'>"+news.nickName+"</td><td align='center''>"+news.mobile+"</td><td align='center'>"+format(news.createDate, 'yyyy-MM-dd HH:mm:ss')+"</td><td align='center'>"+news.iconType+"</td><td align='center'>"+news.address+"</td><td align='center'><input type='button' value='查看' onclick=view('"+news.uuid+"') >&nbsp;<input type='button' value='编辑' onclick=view('"+news.uuid+"')/>&nbsp;<input type='button' value='删除' onclick=view('"+news.uuid+"')/><tr></tr>");  //将返回的数据追加到表格
+                    });
+                }
+            }
+        });
+    }
+    function doExport()
+    {
+        $('#example').tableExport({type: 'excel', escape: 'false',ignoreColumn: [0,2,3,4,5],});
+    }
+    function uuid() {
+        var s = [];
+        var hexDigits = "0123456789abcdef";
+        for (var i = 0; i < 36; i++) {
+            s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+        }
+        s[14] = "4"; // bits 12-15 of the time_hi_and_version field to 0010
+        s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
+        s[8] = s[13] = s[18] = s[23] = "-";
+
+        var uuid = s.join("");
+        return uuid;
+    }
+</script>
+</html>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.PropertyMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.Property" >
+    <id column="uuid" property="uuid"  />
+    <id column="ukey" property="key"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ukey,uuid
+  </sql>
+
+
+  <select id="getProperties" resultMap="BaseResultMap" parameterType="rml.model.Property" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product_property
+  </select>
+
+</mapper>

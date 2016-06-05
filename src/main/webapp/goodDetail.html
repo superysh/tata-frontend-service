@@ -1,0 +1,256 @@
+<!DOCTYPE HTML>
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>他它网</title>
+<meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" name="viewport" id="viewport" />
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+
+<script src="js/tab.js"></script>
+<script src="js/jquery-1.7.js"></script>
+<script src="js/jquery.lazyload.js"></script>
+<link href="css/swiper.min.css" rel="stylesheet" type="text/css" />
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="js/layer/layer.js"></script>
+<script src="js/swiper.min.js"></script>
+</head>
+
+<body style="background:#fff;">
+<div class="member_header">
+    <div class="member_title">
+        <span><a href="#"></a></span>
+        商品详情
+        <div class="r_menu">
+            <ol><a href="#" class="tb4"></a></ol>
+            <div class="hov_menu_100">
+                <div class="hov_menu">
+                    <a href="#" class="tb5">分享</a>
+                    <a href="#" class="tb6">个人中心</a>
+                    <a href="#" class="tb7">首页</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="banner">
+    <div class="swiper-container">
+        <div class="swiper-wrapper" id="mainImgs">
+            <div class="swiper-slide"><img src='js/grey.gif'></div>
+        </div>
+        <!-- Add Pagination -->
+        <div class="swiper-pagination"></div>
+    </div>
+</div>
+
+<div class="pro_center">
+    <div class="title">
+        <span id="title"></span>
+        <ol><a href="#">收藏</a></ol>
+        <div class="clear"></div>
+    </div>
+    <div class="pro_1">
+        <span id="price"></span>
+        <div class="clear"></div>
+    </div>
+    <div class="pro_2">
+        <span >选择容量</span>
+        <div id="propertyValues"></div>
+        <div class="clear"></div>
+    </div>
+
+    <div class="pro_2" style="border:none; padding-bottom:5px;">
+        <span>数量</span>
+        <div class="an_ia">
+            <a class="delNum" href="javascript:void(0)" onclick=minus()>-</a>
+            <input class="m22" value="1" name="num" id="num">
+            <a class="addNum" href="javascript:void(0)" onclick=plus()>+</a>
+            <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+    </div>
+
+</div>
+
+<div class="pro_pz">
+    <span class="tb1"><em>正品保证</em></span>
+    <span class="tb2"><em>满158包邮</em></span>
+    <span class="tb3"><em>7天包退换</em></span>
+    <div class="clear"></div>
+</div>
+
+<div class="pro_centerxt">
+    <div class="title">
+        <ul>
+            <li id="one1" onClick="setTab('one',1,2)" class="hover">商品信息 <em>|</em></li>
+            <li id="one2" onClick="setTab('one',2,2)">售后服务</li>
+        </ul>
+    </div>
+    <div class="pro_ce_txt">
+        <div id="con_one_1">
+
+        </div>
+
+        <div id="con_one_2" style="display:none;">
+            <span>退换货政策</span>
+            <ol>1.他它网部分商品在库存充足的情况下可提供换货服务。<br />
+                2.自订单签收次日起7日内为退货时效期。<br />
+                3.如商品质量问题，或商品及商品本身包装保持他它网出售时原装且配件赠品资料齐全，不影响二次销售的；亦可享受7天无理由退换货服务。<br />
+                4.如因商品质量问题产生的退货，退货运费由他它网承担；因您个人原因产生的退货，退货运费由您个人承担。</ol>
+            <span>退货流程</span>
+            <ol>1.您办理退货，需自行联系物流公司将退货商品寄回他它网。<br />
+                2.请你先阅读退换货政策，确保符合退换货条件，节省您宝贵时间及保证账户安全。<br />
+                3.联系客服申请退货 → 审核通过 → 邮寄商品至他它网 → 他它网退款。</ol>
+            <span>退款方式</span>
+            <ol>1.退货完成后商品款项将退至您他它网账户，可用来再次购买或提现至你银行卡。<br />
+                2.使用优惠券支付的订单，退款只能退回同等价值的优惠券，无法办理提现。<br />
+                3.已付款的订单取消后，在我的订单详情页，可查询到预计退款的到账时间。</ol>
+            <span>联系客服</span>
+            <ol>服务时间：每日  08:00-22:00<br />
+                他它网客服热线：400-838 2 838</ol>
+        </div>
+    </div>
+</div>
+
+<div style="height:70px;"></div>
+<div class="shopping_r">
+    <div class="shop_c">
+        <ol><a href="#"><span id="cargoNum"></span></a></ol>
+        <b><a href="javascript:void(0)" onclick=addCart()>加入购物车</a></b>
+    </div>
+</div>
+
+
+<script>
+
+
+    function GetRequest(strName)
+    {
+        var strHref = window.location.href; //获取Url字串
+        var intPos = strHref.indexOf("?");  // 参数开始位置
+        var strRight = strHref.substr(intPos + 1);
+        var arrTmp = strRight.split(","); //参数分割符
+        for(var i = 0; i < arrTmp.length; i++)
+        {
+            var arrTemp = arrTmp[i].split("=");
+            if(arrTemp[0].toUpperCase() == strName.toUpperCase()) return arrTemp[1];
+        }
+        return "";
+    }
+
+    var uuid = GetRequest("uuid");
+    var userId = GetRequest("userId");
+    userId = "000ae543-23d1-40c3-89d6-e3d853f56099";
+    var propertyId = "";
+    uuid = "32a0e640-29a9-41a7-800d-6d128b8e065d";
+    jQuery.ajax({
+        type: "Get",
+        url: "http://fw.tata168.com/Product/Product/Front",
+        contentType:'application/json;charset=UTF-8',
+        data:{"uuid":uuid,"randomKey":"0068e734-db05-4741-be26-6f0496896209","secretKey":"fbb9940c539a6bbd1fadcc5f3e340987"},
+        dataType:"json",
+        async:false,
+        success:function (data, status, jqXHR) {
+            imgs = data.returnObject.imgs;
+            imgs = imgs.split(",");
+            $.each(imgs,function(index,news){
+                var html = "<img  data-original='"+news+"' class='lazy' src='js/grey.gif'></img>";
+                $("#con_one_1").append(html);
+            });
+            $("img").lazyload({
+                effect : "fadeIn"
+            }).removeClass("lazy");
+
+            var mainImgs = data.returnObject.imgsMain;
+            console.info(mainImgs);
+            mainImgs = mainImgs.split(",");
+            $("#mainImgs").empty();
+            $.each(mainImgs,function(index,news){
+                console.info(news);
+                var html = "<div class='swiper-slide'><img src='"+news+"'></div>";
+                $("#mainImgs").append(html);
+            });
+
+            data = data.returnObject;
+            $("#title").html(data.name);
+            var propertyValues = data.propertyValues;
+            var count = 0;
+            $.each(propertyValues,function(index,news){
+                console.info(news);
+                if(count==0){
+                    var html = "<ol class='on' id='"+news.uuid+"'><a  href='javascript:void(0)' onclick=changePrice("+news.vipPrice+",'"+news.uuid+"')>"+news.propertyValue+"</a><em></em></ol>";
+                    $("#price").html("￥"+news.vipPrice/100);
+                    propertyId = news.uuid;
+                }else{
+                    var html = "<ol id='"+news.uuid+"'><a href='javascript:void(0)' onclick=changePrice("+news.vipPrice+",'"+news.uuid+"')>"+news.propertyValue+"</a><em></em></ol>";
+
+                }
+                $("#propertyValues").append(html);
+                count++;
+            });
+        },
+        error: ""
+    });
+    jQuery.ajax({
+        type: "GET",
+        url: "http://fw.tata168.com/Cargo/Cargo/Num",
+        contentType:'application/json;charset=UTF-8',
+        data:{"userId":userId,"randomKey":"0068e734-db05-4741-be26-6f0496896209","secretKey":"fbb9940c539a6bbd1fadcc5f3e340987"},
+        dataType:"json",
+        success:function (data, status, jqXHR) {
+            console.info(data)
+           $("#cargoNum").html(data.returnObject);
+        },
+        error: ""
+    });
+
+    function changePrice(price,uuid){
+        $("#price").html("￥"+price/100);
+        $("#"+uuid+"").siblings().removeClass("on");
+        $("#"+uuid+"").addClass("on");
+        propertyId = uuid;
+    }
+
+    function plus(){
+        var num = $("#num").val();
+        num++;
+        $("#num").val(num);
+    }
+
+
+    function minus(){
+        var num = $("#num").val();
+        num--;
+        $("#num").val(num);
+    }
+    var swiper = new Swiper('.swiper-container', {
+        pagination: '.swiper-pagination',
+        slidesPerView: 1,
+        paginationClickable: true,
+        spaceBetween: 5,
+        autoplay: 2500,
+        autoplayDisableOnInteraction: false
+    });
+
+    function addCart(){
+        var goodCount = $("#num").val();
+        jQuery.ajax({
+            type: "POST",
+            url: "http://fw.tata168.com/Cargo/Cargo",
+            contentType:'application/json;charset=UTF-8',
+            data:JSON.stringify({"propertyId":propertyId,"userId":userId,"goodCount":goodCount,"randomKey":"0068e734-db05-4741-be26-6f0496896209","secretKey":"fbb9940c539a6bbd1fadcc5f3e340987"}),
+            dataType:"json",
+            success:function (data, status, jqXHR) {
+                layer.msg('加入购物车成功', {
+                    time: 1000, //20s后自动关闭
+                });
+                alert("加入购物车成功");
+                var num =  $("#cargoNum").html();
+                num++;
+                $("#cargoNum").html(num);
+            },
+            error: ""
+        });
+    }
+</script>
+</body>
+</html> 

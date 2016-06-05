@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.ProductCategoryMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.ProductCategory" >
+    <id column="uuid" property="uuid"  />
+    <result column="name" property="name"  />
+    <result column="order_by" property="order"  />
+    <result column="create_time" property="createTime"  />
+    <result column="icon" property="icon"  />
+    <result column="pid" property="pid"  />
+    <result column="title" property="title"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+      uuid,name,order_by,pid,create_time,icon,title
+  </sql>
+
+
+  <select id="getCategoriesRoot" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product_category
+    where module_id=#{moduleId}
+    and record_status = 1
+    and (pid = ''
+    or pid is null)
+    order by create_time desc
+  </select>
+
+
+  <select id="getFrontPageCategories" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product_category
+    where  record_status = 1
+    and is_top=1
+    and level=2
+    order by order_by
+  </select>
+
+
+  <select id="getFirstPageCategories" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product_category
+    where  record_status = 1
+    and is_top=1
+    and level=1
+    order by order_by
+  </select>
+
+
+  <select id="getNormalRec" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product_category
+    where record_status = 1
+    and normal_recommend=1
+    order by order_by
+  </select>
+
+
+  <select id="getHotRec" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product_category
+    where record_status = 1
+    and hot_recommend=1
+    order by order_by
+  </select>
+
+
+  <select id="getSecRec" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product_category
+    where record_status = 1
+    and is_second_top=1
+    order by order_by
+  </select>
+
+  <select id="getProductCategories" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product_category
+    where module_id=#{moduleId}
+    and record_status = 1
+    order by create_time desc
+  </select>
+
+  <select id="getProductPid" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product_category
+    where pid=#{uuid}
+    and record_status = 1
+    order by order_by
+  </select>
+
+  <select id="getCategoryUUID" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product_category
+    where uuid=#{uuid}
+    and record_status = 1
+  </select>
+
+
+
+  <insert id="insertCategory" parameterType="rml.model.ProductBrand" >
+    insert into tb_product_category(uuid,name,order_by,create_time,module_id,module_name,record_status,pid,is_top,is_second_top,icon)
+    values(#{uuid},#{name},#{order},#{createTime},#{moduleId},#{moduleName},1,#{pid},#{isTop},#{isSecondTop},#{icon})
+  </insert>
+
+
+</mapper>

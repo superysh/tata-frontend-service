@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.PropertyValueMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.PropertyValue" >
+    <id column="uuid" property="uuid"  />
+    <id column="property_key" property="propertyKey"  />
+    <id column="property_id" property="propertyId"  />
+    <id column="property_value" property="propertyValue"  />
+    <id column="product_id" property="productId"  />
+    <id column="create_time" property="createTime"  />
+    <id column="record_status" property="recordStatus"  />
+    <id column="price" property="price"  />
+    <id column="module_id" property="moduleId"  />
+    <id column="type" property="type"  />
+    <id column="brand_id" property="brandId"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+uuid,property_id,property_key,property_value,product_id,create_time,record_status,price,module_id,type,brand_id
+  </sql>
+
+
+  <insert id="delete" parameterType="rml.model.PropertyValue" >
+    delete from tb_property_value where product_id = #{productId}
+  </insert>
+
+
+
+  <insert id="insert" parameterType="rml.model.PropertyValue" >
+    insert into tb_property_value (uuid,property_id,property_key,property_value,product_id,create_time,record_status,price,module_id,type,brand_id)
+    values (#{uuid},#{propertyId},#{propertyKey},#{propertyValue},#{productId},#{createTime},#{recordStatus},#{price},#{moduleId},#{type},#{brandId}
+    )
+  </insert>
+
+
+  <select id="getProductProperty" resultMap="BaseResultMap" parameterType="java.lang.String" >
+   select     <include refid="Base_Column_List" /> from tb_property_value where product_id = #{productId} and type=1
+  </select>
+
+  <select id="getPropertyValue" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select     <include refid="Base_Column_List" /> from tb_property_value where uuid = #{uuid} and type=1
+  </select>
+
+
+</mapper>

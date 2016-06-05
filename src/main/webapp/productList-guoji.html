@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<p lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script language="JavaScript" src="js/jquery-1.11.3.min.js"></script>
+<script language="JavaScript" src="js/jquery.pagination.js"></script>
+<script language="JavaScript" src="js/layer/layer.js"></script>
+<script language="JavaScript" src="js/config-all.js"></script>
+
+<link href="css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+<link href="js/layer/skin/layer.css" rel="stylesheet" type="text/css" />
+
+<link rel="stylesheet" href="css/pagination.css" />
+</p>
+</p>
+<label style="font-size: 0.8em">商品管理</label>
+</p>
+</p>
+<table id="example" class="display" cellspacing="0" width="100%" class="table table-bordered table-striped table-hover" style="font-size: 0.75em;border-color:aliceblue;color:#7b7b7b" border="1">
+    <thead>
+    <tr>
+        <th >ID</th>
+        <th >商品名称</th>
+        <th >序号</th>
+        <th >创建时间</th>
+        <th >品牌名称</th>
+        <th >库存数量</th>
+        <th >库存警告</th>
+        <th >会员注册类别</th>
+    </tr>
+    </thead>
+
+</table>
+
+
+
+<div id="Pagination" style="float: right"></div>
+</body>
+<script language="javascript" type="text/javascript">
+    function view(id){
+        console.info(id);
+        window.open("userDetail.html?uuid="+id);
+    }
+    function clear(id){
+        console.info(id);
+        $("#"+id+"").val("");
+    }
+    function getTotal(){
+        var pageCount = 0;
+    jQuery.ajax({
+        type: "GET",
+        async: false,
+        url: baseUrl + "/Product/Products/All",
+        contentType: 'application/json;charset=UTF-8',
+        dataType: "json",
+        data: {"moduleId": 2},
+        success: function (data, status, jqXHR) {
+            pageCount= data;
+        },
+        error: ''
+    });
+        return pageCount;
+    }
+    var pageIndex =0;     //页索引
+    var pageSize =5;    //每页显示的条数
+        $("#Pagination").pagination(getTotal(), {
+            callback: PageCallback,
+            prev_text: '上一页',
+            next_text: '下一页',
+            items_per_page: pageSize,
+            num_display_entries: 2,
+            current_page: pageIndex,
+            num_edge_entries: 1
+        });
+        function PageCallback(index, jq) {
+            Init(index);
+        }
+    Init(0);
+    var format = function(time, format){
+        var t = new Date(time);
+        var tf = function(i){return (i < 10 ? '0' : '') + i};
+        return format.replace(/yyyy|MM|dd|HH|mm|ss/g, function(a){
+            switch(a){
+                case 'yyyy':
+                    return tf(t.getFullYear());
+                    break;
+                case 'MM':
+                    return tf(t.getMonth() + 1);
+                    break;
+                case 'mm':
+                    return tf(t.getMinutes());
+                    break;
+                case 'dd':
+                    return tf(t.getDate());
+                    break;
+                case 'HH':
+                    return tf(t.getHours());
+                    break;
+                case 'ss':
+                    return tf(t.getSeconds());
+                    break;
+            }
+        })
+    }
+    function Init(pageIndex) {
+
+        $.ajax({
+            type: "get",
+            dataType: "json",
+            url: baseUrl+'/Product/Products',
+            contentType:'application/json;charset=UTF-8',
+            data: {"pageNo": pageIndex+1,"pageSize":pageSize,"moduleId":"2"},
+            success: function(data) {
+                $("#example tr:gt(0)").remove();
+                if(data!=""){
+                    $.each(data,function(index,news){
+                        $("#example").append("<tr bgcolor='white' align='center'><td>"+news.uuid+"</td><td align='center'>"+news.name+"</td><td align='center''>"+news.order+"</td><td align='center'>"+format(news.createTime, 'yyyy-MM-dd HH:mm:ss')+"</td><td align='center'>"+news.brandName+"</td><td align='center'>"+news.storage+"</td><td align='center'>"+news.storageAlert+"</td><td align='center'><input type='button' value='查看' onclick=view('"+news.uuid+"') ></td></tr>");  //将返回的数据追加到表格
+                    });
+                }
+            }
+        });
+
+    }
+    function query(){
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: baseUrl+'/User/Users/Search',
+            contentType:'application/json;charset=UTF-8',
+            data:  JSON.stringify({"nickName": $("#nickName").val(),"mobile":$("#mobile").val()}),
+            success: function(data) {
+                console.info(data);
+                $("#example tr:gt(0)").remove();
+                if(data!=""){
+                    $.each(data,function(index,news){
+                        $("#example").append("<tr bgcolor='white' align='center'><td>"+news.uuid+"</td><td align='center'>"+news.nickName+"</td><td align='center''>"+news.mobile+"</td><td align='center'>"+format(news.createDate, 'yyyy-MM-dd HH:mm:ss')+"</td><td align='center'>"+news.iconType+"</td><td align='center'>"+news.address+"</td><td align='center'><input type='button' value='查看' onclick=view('"+news.uuid+"') >&nbsp;<input type='button' value='编辑' onclick=view('"+news.uuid+"')/>&nbsp;<input type='button' value='删除' onclick=view('"+news.uuid+"')/><tr></tr>");  //将返回的数据追加到表格
+                    });
+                }
+            }
+        });
+    }
+</script>
+</html>

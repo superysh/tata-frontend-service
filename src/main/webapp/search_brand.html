@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    div{font-size:0.8em;font-family: 'Trebuchet MS', sans-serif;}
+    td{font-size:0.8em;font-family: 'Trebuchet MS', sans-serif;}
+</style>
+<script language="JavaScript" src="js/jquery.min-2.js"></script>
+<script language="JavaScript" src="js/config.js"></script>
+<script language="JavaScript" src="js/layer/layer.js"></script>
+<script language="JavaScript" src="js/layer/extend/layer.ext.js"></script>
+<div style="float: left;"><strong>[编辑商品品牌]</strong></div><div  style="position:relative;float: right"><img src="images/close1.png"  onclick="close1()"/></div>
+<br>
+
+    <div id="title"></div>
+<table>
+    <tr>
+    <td style="font-size: 0.75em">品牌名称:</td>
+    <td><input type="text" id="name"></td>
+</tr>
+    <tr>
+        <td style="font-size: 0.75em">是否在首页显示:</td>
+        <td>不显示:<input type="radio" name="isTop" checked value="0" >显示: <input type="radio" name="isTop"  value="1" ></td>
+    </tr>
+    </p>
+    <tr>
+        <td style="font-size: 0.75em">品牌排序:</td>
+        <td>
+            <select id="order">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+            </select>
+            <button id="submit" onclick="goLink()" >提交</button>
+        </td>
+
+
+    </tr>
+</table>
+<iframe src="about:blank" name="blankFrame" id="blankFrame" onchange="goDisplay()" id="imgFrame" style="display: none"></iframe>
+<form target="blankFrame" method="POST" action="http://localhost:8080/upload/Img" enctype="multipart/form-data" onsubmit="goDisplay()">
+    <!--<form method="POST" action="http://localhost:8080/upload" enctype="multipart/form-data" >-->
+    File:
+    <input type="file" name="file" id="file" /> <br/>
+    </br>
+    <input type="submit" value="上传图片" name="upload" id="upload" />
+</form>
+
+<p/>
+<img src="" id="img" style="height: 200px;width: 200px"/>
+</body>
+<script>
+
+    function goDisplay(){
+        setTimeout("display()",1000);
+
+    }
+    function display(){
+        var obj = $("#blankFrame").contents().find("pre").html();
+        var dir = jQuery.parseJSON(obj);
+        $("#img").attr("src",dir[0].url);
+    }
+    var uuid = GetRequest("uuid");
+
+
+    function GetRequest(strName)
+    {
+        var strHref = window.location.href; //获取Url字串
+        var intPos = strHref.indexOf("?");  // 参数开始位置
+        var strRight = strHref.substr(intPos + 1);
+        var arrTmp = strRight.split("&"); //参数分割符
+        for(var i = 0; i < arrTmp.length; i++)
+        {
+            var arrTemp = arrTmp[i].split("=");
+            if(arrTemp[0].toUpperCase() == strName.toUpperCase()) return arrTemp[1];
+        }
+        return "";
+    }
+    console.info(uuid);
+    jQuery.ajax({
+        type: "GET",
+        url: baseUrl + "/Brand/Brand",
+        contentType: 'application/json;charset=UTF-8',
+        data: {"uuid": uuid},
+        dataType: "json",
+        success: function (data, status, jqXHR) {
+            console.info(data);
+            var name = data.returnObject.name;
+            var icon = data.returnObject.icon;
+            var isTop = data.returnObject.isTop;
+            var order = data.returnObject.order;
+            console.info(data.returnObject.isTop);
+            $("#name").val(name);
+            $("#img").attr("src",icon);
+            if(data.returnObject.isTop==0){
+                $("input[name='isTop']").get(0).checked=true;
+            }else{
+                $("input[name='isTop']").get(1).checked=true;
+            }
+            $("#order").val(order);
+        },
+        error: ''
+    });
+    function goLink() {
+        if (name == null) {
+            layer.msg('商品品牌不得为空', {icon: 5});
+            return;
+        }
+        var obj = $("#blankFrame").contents().find("pre").html();
+        if (obj != undefined) {
+            var dir = jQuery.parseJSON(obj);
+            var icon = dir[0].url;
+        }else{
+            var icon = "";
+        }
+        var isTop = $('input[name="isTop"]:checked').val();
+        jQuery.ajax({
+            type: "POST",
+            url: baseUrl + "/Product/Brand/Modify",
+            contentType: 'application/json;charset=UTF-8',
+            data: JSON.stringify({"isTop":isTop,"icon":icon,"uuid": uuid, "name": $("#name").val(), "order":$("#order").val()}),
+            dataType: "json",
+            success: function (data, status, jqXHR) {
+                layer.msg('修改成功', {icon: 4});
+            },
+            error: ''
+        });
+    }
+
+    function close(){
+        layer.close();
+        parent.location="brandList-rihua.html";
+    }
+
+    function close1(){
+        layer.close();
+        parent.location="brandList.html";
+    }
+</script>
+
+<div id="result">
+
+</div>
+
+</html>

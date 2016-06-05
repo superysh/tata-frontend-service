@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.UserMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.User" >
+    <result column="nick_name" property="nickName"  />
+    <result column="mobile" property="mobile"  />
+    <result column="password" property="password"/>
+    <result column="icon" property="icon"/>
+    <result column="token" property="token"/>
+    <result column="update_time" property="updateTime"/>
+    <result column="create_time" property="createTime"/>
+    <result column="type_desc" property="typeDesc"/>
+    <result column="third_part_uuid" property="thirdPartUuid"/>
+    <result column="funding_level" property="fundingLevel"/>
+    <result column="degree" property="degree"  />
+    <result column="sex" property="sex"  />
+    <result column="birthday" property="birthday"  />
+    <result column="level" property="level"  />
+    <result column="online_money" property="onlineMoney"  />
+    <result column="offline_money" property="offlineMoney"  />
+    <result column="account_money" property="accountMoney"  />
+    <result column="account_name" property="accountName"  />
+    <result column="account_name" property="accountName"  />
+    <result column="qq_id" property="qqId"  />
+    <result column="weixin_id" property="weixinId"  />
+    <result column="weibo_id" property="weiboId"  />
+  </resultMap>
+
+
+  <resultMap id="userTypeMap" type="rml.model.UserTypeDesc" >
+    <result column="type_desc" property="typeDesc"/>
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    uuid, nick_name, password,mobile,icon,email,create_time,identification,level,type,channel,third_part_uuid,funding_level,valid,degree,sex,birthday,offline_money,online_money,account_money,account_name,qq_id,weixin_id,weibo_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_user
+    where uuid = #{uuid}
+  </select>
+
+
+
+  <select id="selectByAccount" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where account_name = #{accountName}
+  </select>
+
+  <select id="selectByToken" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where token = #{token}
+  </select>
+
+
+  <select id="checkPasswordAccount" resultMap="BaseResultMap" parameterType="rml.model.User" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where account_name = #{accountName}  and password = #{password}
+    and status = 1
+  </select>
+
+  <select id="checkPasswordMobile" resultMap="BaseResultMap" parameterType="rml.model.User" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where mobile = #{mobile}  and password = #{password}
+    and status = 1
+  </select>
+
+
+  <select id="getAccount" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where uuid = #{uuid}
+    and status = 1
+  </select>
+
+
+  <select id="checkPasswordUUID" resultMap="BaseResultMap" parameterType="rml.model.User" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where uuid = #{uuid} and password = #{password}
+    and status = 1
+  </select>
+
+  <insert id="insert" parameterType="rml.model.User" >
+    insert into tb_user (uuid, nick_name, account_name,
+      password,create_time,status,valid,level,online_money,offline_money,type,identification)
+    values (#{uuid}, #{nickName}, #{accountName},
+      #{password},#{createTime},1,#{valid},1,0,0,1,1)
+  </insert>
+  <insert id="insertSelective" parameterType="rml.model.User" >
+    insert into user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="nickName != null" >
+        nickName,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id},
+      </if>
+      <if test="nickName != null" >
+        #{nick_name},
+      </if>
+      <if test="mobile != null" >
+        #{mobile},
+      </if>
+      <if test="address != null" >
+        #{password},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="rml.model.User" >
+    update tb_user
+    <set >
+      <if test="password != null" >
+        password = #{password},
+      </if>
+      <if test="token != null" >
+        token = #{token},
+      </if>
+    </set>
+    where ID = #{id}
+  </update>
+
+
+  <update id="updateByPrimaryKey" parameterType="rml.model.User" >
+    update user
+    set NAME = #{name,jdbcType=VARCHAR},
+      AGE = #{age,jdbcType=DECIMAL},
+      ADDRESS = #{address,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectUid" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select     <include refid="Base_Column_List" /> from tb_user where uid = #{uid}
+  </select>
+
+
+  <select id="selecthxUid" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select     <include refid="Base_Column_List" /> from tb_user where huanxin_uid = #{huanxinUid}
+  </select>
+
+
+  <select id="checkPasswordHuanxin" resultMap="BaseResultMap" parameterType="rml.model.User" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where huanxin_uid = #{huanxinUid} and password = #{password}
+  </select>
+
+
+  <update id="updateToken" parameterType="rml.model.User" >
+    update tb_user
+    set token = #{token},
+    update_time = #{updateTime}
+    where mobile = #{mobile}
+  </update>
+
+
+
+  <update id="updateEmail" parameterType="rml.model.User" >
+    update tb_user
+    set email = #{email},
+    update_time = #{updateTime}
+    where token = #{token}
+  </update>
+
+  <update id="updatePasswordTwo" parameterType="rml.model.User" >
+    update tb_user
+    set password = #{password},
+    update_time = #{updateTime}
+    where uuid = #{uuid}
+  </update>
+
+
+
+
+
+  <select id="getUserTypes"  resultMap="userTypeMap" parameterType="rml.model.UserTypeDesc" >
+    select uuid as type_uuid,type,type_desc,money from tb_user_type_desc where status = 1
+  </select>
+
+
+  <insert id="insertUserType" parameterType="rml.model.UserType" >
+    insert into tb_user_type (uuid,user_id,
+    user_type_id,create_time)
+    values (#{uuid}, #{userId},#{userTypeId},#{createTime}
+    )
+  </insert>
+
+
+  <update id="updatePayPass" parameterType="rml.model.User" >
+    update tb_user set pay_password = #{payPassword} where uuid = #{uuid}
+  </update>
+
+  <select id="getUsers"  resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where status = 1
+  </select>
+
+
+  <select id="getUsersDate"  resultMap="BaseResultMap" parameterType="rml.model.User">
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where create_time &lt; #{endDate} and create_time &gt; #{startDate}
+  </select>
+
+  <insert id="insertThird" parameterType="rml.model.User" >
+    insert into tb_user (uuid, nick_name,third_part_uuid,icon,channel,type,identification,level,online_money,offline_money,status,create_time,source_shop_id)
+    values (#{uuid}, #{nickName},#{thirdPartUuid},#{icon},#{channel},2,#{identification},1,0,0,1,#{createTime},#{shopId})
+  </insert>
+
+
+  <select id="getThird" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where third_part_uuid = #{thirdPartUuid}
+    and status = 1
+  </select>
+
+  <insert id="updateThird" parameterType="rml.model.User" >
+    update tb_user set nick_name=#{nickName},icon=#{icon} where uuid=#{uuid}
+  </insert>
+
+  <insert id="updateMoney" parameterType="rml.model.User" >
+    update tb_user set online_money=online_money+#{onlineMoney},offline_money=offline_money+#{offlineMoney} where uuid=#{uuid}
+  </insert>
+
+  <insert id="updateThirdTwo" parameterType="rml.model.User" >
+    update tb_user set nick_name=#{nickName},icon=#{icon},third_part_uuid = #{thirdPartUuid} where uuid=#{uuid}
+  </insert>
+
+  <select id="selectByMobile" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where mobile = #{mobile}
+    and status = 1
+  </select>
+
+  <insert id="deleteUser" parameterType="rml.model.User" >
+    update tb_user set status=9 where uuid=#{uuid}
+  </insert>
+
+  <insert id="updateMobile" parameterType="rml.model.User" >
+    update tb_user set mobile=#{mobile} where uuid=#{uuid}
+  </insert>
+
+
+  <insert id="updateType" parameterType="rml.model.User" >
+    update tb_user set level=#{level} where uuid=#{uuid}
+  </insert>
+
+
+  <insert id="insertOldDate" parameterType="rml.model.User" >
+  insert into tb_user(uuid,nick_name,email,password,valid,group_id,account_total,true_name,sex,icon,mobile,qq,msn,office_phone,home_phone,status,third_part_uuid,level,user_pay_status,create_time)
+  values(#{uuid},#{nickName},#{email},#{password},#{valid},#{groupId},#{accountTotal},#{trueName},#{sex},#{icon},#{mobile},#{qq},#{msn},#{officePhone},#{homePhone},#{status},#{thirdPartUuid},#{level},#{userPayStatus},#{createTime})
+  </insert>
+
+  <insert id="updateFunding" parameterType="rml.model.User" >
+    update tb_user set identification=#{identification} where uuid=#{uuid}
+  </insert>
+
+  <insert id="updateIden" parameterType="rml.model.User" >
+    update tb_user set identification=#{identification} where uuid=#{uuid}
+  </insert>
+
+  <insert id="updateLevel" parameterType="rml.model.User" >
+    update tb_user set funding_level=#{fundingLevel} where uuid=#{uuid}
+  </insert>
+
+
+  <insert id="updatePassword" parameterType="rml.model.User" >
+    update tb_user set password=#{password} where mobile=#{mobile}
+  </insert>
+
+
+
+
+  <insert id="updateNickName" parameterType="rml.model.User" >
+    update tb_user set nick_name=#{nickName} where uuid=#{uuid}
+  </insert>
+
+
+  <insert id="updateSex" parameterType="rml.model.User" >
+    update tb_user set sex=#{sex} where uuid=#{uuid}
+  </insert>
+
+  <insert id="updateBirth" parameterType="rml.model.User" >
+    update tb_user set birthday=#{birthday} where uuid=#{uuid}
+  </insert>
+
+  <insert id="updateDegree" parameterType="rml.model.User" >
+    update tb_user set degree=#{degree} where uuid=#{uuid}
+  </insert>
+
+  <insert id="updateLevelTwo" parameterType="rml.model.User" >
+    update tb_user set pid=#{pid} where uuid=#{uuid}
+  </insert>
+
+
+  <insert id="updateUserLevel" parameterType="rml.model.User" >
+    update tb_user set level=#{level} where uuid=#{uuid}
+  </insert>
+
+
+  <insert id="updateIcon" parameterType="rml.model.User" >
+    update tb_user set icon=#{icon} where uuid=#{uuid}
+  </insert>
+
+
+  <select id="getUsersFunding"  resultMap="BaseResultMap" parameterType="rml.model.User" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where identification = 2
+    and funding_level = #{fundingLevel}
+  </select>
+
+  <select id="selectByNickPhone" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where nick_name = #{nickName}
+    or mobile = #{mobile}
+    and
+    (funding_level  &lt;&gt; #{fundingLevel}
+    or funding_level is null)
+  </select>
+
+
+  <select id="getSet"  resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where pid=#{pid}
+  </select>
+
+
+  <insert id="minusOfflineMoney" parameterType="rml.model.User" >
+    update tb_user set offline_money=offline_money-#{offlineMoney} where uuid=#{uuid}
+  </insert>
+
+
+  <insert id="minusOnlineMonet" parameterType="rml.model.User" >
+    update tb_user set online_money=online_money-#{onlineMoney} where uuid=#{uuid}
+  </insert>
+
+  <insert id="updateOfflineMoney" parameterType="rml.model.User" >
+    update tb_user set offline_money=#{offlineMoney} where uuid=#{uuid}
+  </insert>
+
+  <insert id="updateOnlineMoney" parameterType="rml.model.User" >
+    update tb_user set online_money=#{onlineMoney} where uuid=#{uuid}
+  </insert>
+
+  <insert id="updateThirdWeixin" parameterType="rml.model.User" >
+    update tb_user set weixin_id=#{weixinId},weixin_icon=#{weixinIcon} where uuid=#{uuid}
+  </insert>
+
+
+  <insert id="updateThirdWeibo" parameterType="rml.model.User" >
+    update tb_user set weibo_id=#{weiboId},weibo_icon=#{weiboIcon} where uuid=#{uuid}
+  </insert>
+
+
+  <insert id="updateThirdQQ" parameterType="rml.model.User" >
+    update tb_user set qq_id=#{qqId},qq_icon=#{qqIcon} where uuid=#{uuid}
+  </insert>
+
+
+  <select id="selectThirdQQ"  resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where qq_id=#{qqId}
+  </select>
+
+
+  <select id="selectThirdWeixin"  resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where weixin_id=#{weixinId}
+  </select>
+
+
+  <select id="selectThirdWeibo"  resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where weibo_id=#{weiboId}
+  </select>
+
+</mapper>

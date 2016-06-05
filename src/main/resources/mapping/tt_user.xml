@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.TtUserMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.Tt_User" >
+    <id column="username" property="userName"  />
+    <result column="email" property="email"  />
+    <result column="mobile" property="mobile"  />
+    <result column="password" property="password"/>
+    <result column="ico" property="ico"/>
+    <result column="valid" property="valid"/>
+    <result column="group_id" property="groupId"/>
+    <result column="user_money" property="userMoney"/>
+    <result column="true_name" property="trueName"/>
+    <result column="sex" property="sex"/>
+    <result column="mobile_phone" property="mobilePhone"/>
+    <result column="qq" property="qq"/>
+    <result column="msn" property="msn"/>
+    <result column="office_phone" property="officePhone"/>
+    <result column="home_phone" property="homePhone"/>
+    <result column="status" property="status"/>
+    <result column="wechat_openid" property="wechatOpenid"/>
+    <result column="user_type" property="userType"/>
+    <result column="user_pay_status" property="userPayStatus"/>
+  </resultMap>
+
+
+  <select id="getAll" resultMap="BaseResultMap">
+  select username,email,password,valid,group_id,user_money,true_name,sex,ico,mobile_phone,qq,msn,office_phone,home_phone,status,wechat_openid,user_type,user_pay_status from tt_user
+  </select>
+
+
+
+
+</mapper>

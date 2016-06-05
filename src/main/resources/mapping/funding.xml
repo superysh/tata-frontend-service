@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.FundingMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.Funding" >
+    <id column="uuid" property="uuid"  />
+    <result column="start_date" property="startDate"  />
+    <result column="end_date" property="endDate"  />
+    <result column="order_id" property="orderId"  />
+    <result column="total_money" property="totalMoney"  />
+    <result column="rasied_money" property="raisedMoney"  />
+    <result column="total_rasied_people" property="totalRasiedPeople"  />
+    <result column="name" property="name"  />
+    <result column="i_desc" property="lDesc"  />
+    <result column="user_id" property="userId"  />
+    <result column="activity_id" property="activityId"  />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+   uuid,start_date,end_date,order_id,total_money,rasied_money,total_rasied_people,name,i_desc,user_id,activity_id
+  </sql>
+
+
+
+  <insert id="insert" parameterType="rml.model.Funding" >
+    insert into tb_crowdfunding (uuid,start_date,end_date,order_id,total_money,rasied_money,total_rasied_people,name,i_desc,user_id,activity_id,status)
+    values (#{uuid},#{startDate},date_add(now(), interval #{limitedDays} DAY ),#{orderId},#{totalMoney},#{raisedMoney},#{totalRasiedPeople},#{name},#{lDesc},#{userId},#{activityId},#{status}
+    )
+  </insert>
+
+
+  <select id="getUserFunding" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_crowdfunding
+    where user_id = #{userId}
+    and status = 2
+  </select>
+
+  <insert id="updateOrderReal" parameterType="java.lang.String" >
+    UPDATE tb_crowdfunding set status = 2 where order_id =  #{orderId}
+  </insert>
+
+  <insert id="updateMoney" parameterType="rml.model.Funding" >
+    UPDATE tb_crowdfunding set rasied_money = rasied_money+#{raisedMoney},total_rasied_people=total_rasied_people+1 where order_id =  #{orderId}
+  </insert>
+
+  <select id="getFunding" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from tb_crowdfunding
+        where order_id = #{orderId}
+        and status = 2
+  </select>
+
+
+</mapper>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script language="JavaScript" src="js/jquery-6.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/jquery.datetimepicker.css"/>
+    <script language="JavaScript" src="js/jquery.datetimepicker.full.js"></script>
+</head>
+<body style="font-size: 0.8em">
+<table>
+    <tr>
+        <td>手机号:<input type="text" value="" id="mobile"/>&nbsp;&nbsp;开始时间:<input type="text" value="" id="datetimepicker"/>&nbsp;&nbsp;结束时间:<input type="text" value="" id="datetimepicker1"/>&nbsp;&nbsp;<select id="type"><option value="11">充值订单列表</option><option value="12">扣除线下币订单列表</option></select>&nbsp;&nbsp;<input type="button" value="提交" onclick=submit()></td>
+    </tr>
+</table>
+
+<script language="javascript" type="text/javascript">
+    $.datetimepicker.setLocale('ch');
+    $('#datetimepicker').datetimepicker({lang:'ch',format:'Y-m-d H:m:s'});
+    $('#datetimepicker1').datetimepicker({lang:'ch',format:'Y-m-d H:m:s'});
+
+    function submit(){
+        var startDate = $("#datetimepicker").val();
+        var endDate = $("#datetimepicker1").val();
+        var type = $("#type").val();
+        var mobile = $("#mobile").val();
+        window.open("chargeOrderList.html?startDate="+startDate+"&endDate="+endDate+"&type="+type+"&mobile="+mobile);
+    }
+ </script>
+</body>
+</html>

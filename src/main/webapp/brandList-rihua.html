@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script language="JavaScript" src="js/jquery.min-2.js"></script>
+<script language="JavaScript" src="js/jquery.dataTables.min.js"></script>
+<script language="JavaScript" src="js/layer/layer.js"></script>
+<script language="JavaScript" src="js/config-all.js"></script>
+
+
+<link href="css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+<link href="js/layer/skin/layer.css" rel="stylesheet" type="text/css" />
+<span onclick="javascript:history.back(-1);" style="cursor:pointer;"><img src="images/pre.gif"><img src="images/pre.gif"><img src="images/pre.gif"></span>
+<div align="right"><span style="font-weight:bold;font-size: 0.75em" ></span><button id="userCount" onclick="add()" style="font-weight:bold;color: #307fb1">添加品牌</button></div>
+</p>
+</p>
+<table id="example" class="display" cellspacing="0" width="100%" class="table table-bordered table-striped table-hover" style="font-size: 0.75em">
+    <thead>
+    <tr>
+        <th align="left">品牌名称</th>
+        <th align="left">排序序号</th>
+        <th align="left">创建时间</th>
+        <th align="left">是否在首页显示</th>
+        <th align="left">操作</th>
+    </tr>
+    </thead>
+</table>
+</body>
+<script>
+        $(document).ready(function() {
+            $('#example').dataTable( {
+                "oLanguage" : {
+                    "sLengthMenu": "每页显示 _MENU_ 条记录",
+                    "sZeroRecords": "抱歉， 没有找到",
+                    "sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据",
+                    "sInfoEmpty": "没有数据",
+                    "sInfoFiltered": "(从 _MAX_ 条数据中检索)",
+                    "sZeroRecords": "没有检索到数据",
+                    "sSearch": "任意搜索条件:",
+                    "oPaginate": {
+                        "sFirst": "首页",
+                        "sPrevious": "前一页",
+                        "sNext": "后一页",
+                        "sLast": "尾页"
+                    }
+                },
+                "ajax": baseUrl+"/Product/Brands?moduleId=1"
+            })
+        } );
+    function goToUserDate(){
+        window.location.href= 'userListDate.html';
+    }
+        function refresh() {
+            this.location = 'brandList.html'
+        }
+
+    function modify(uuid){
+        layer.open({
+            type: 2,
+            title: false,
+            area: ['500px', '500px'],
+            shade: 0.8,
+            shadeClose:true,
+            closeBtn: 0,
+            content: 'search_brand.html?uuid='+uuid
+        });
+    }
+
+        function add(){
+            layer.open({
+                type: 2,
+                title: false,
+                area: ['500px', '500px'],
+                shade: 0.8,
+                shadeClose:true,
+                closeBtn: 0,
+                content: 'add_brand.html'
+            });
+        }
+
+        function deleteBrand(uuid){
+            layer.confirm('确定删除么?', {icon: 3, title:'提示'}, function(index){
+                jQuery.ajax({
+                    type: "POST",
+                    url: baseUrl + "/Product/Brand/Delete",
+                    contentType: 'application/json;charset=UTF-8',
+                    data: JSON.stringify({"uuid": uuid}),
+                    dataType: "json",
+                    success: function (data, status, jqXHR) {
+                        layer.msg('删除成功', {icon: 4});
+                        setTimeout("refresh()",1000);
+                    },
+                    error: ''
+                });
+                layer.close(index);
+            });
+        }
+</script>
+</html>

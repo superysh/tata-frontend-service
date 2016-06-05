@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.ProductBrandMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.ProductBrand" >
+    <id column="uuid" property="uuid"  />
+    <result column="name" property="name"  />
+    <result column="order_by" property="order"  />
+    <result column="create_time" property="createTime"  />
+    <result column="module_name" property="moduleName"  />
+    <result column="icon" property="icon"  />
+    <result column="is_top" property="isTop"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+      uuid,name,order_by,pid,create_time,module_name,icon,is_top
+  </sql>
+
+
+  <select id="getProductBrand" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product_brand
+    where module_id=#{moduleId}
+    and record_status = 1
+  </select>
+
+  <select id="getProductBrandUUID" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product_brand
+    where uuid=#{uuid}
+    and record_status = 1
+  </select>
+
+  <select id="getFrontBrands" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product_brand
+    where is_top=1
+    and record_status = 1
+    order by order_by
+    limit 0,11
+  </select>
+
+  <insert id="updateBrand" parameterType="rml.model.ProductBrand" >
+    UPDATE tb_product_brand set name = #{name},order_by = #{order},icon=#{icon},is_top=#{isTop} where uuid=#{uuid}
+  </insert>
+
+  <insert id="deleteBrand" parameterType="rml.model.ProductBrand" >
+    UPDATE tb_product_brand set record_status = 0 WHERE uuid=#{uuid}
+  </insert>
+
+  <insert id="insertBrand" parameterType="rml.model.ProductBrand" >
+    insert into tb_product_brand(uuid,name,order_by,create_time,module_id,module_name,record_status,icon,is_top)
+    values(#{uuid},#{name},#{order},#{createTime},#{moduleId},#{moduleName},1,#{icon},#{isTop})
+  </insert>
+
+  <select id="getBrandsAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tb_product_brand
+    where  record_status = 1
+    order by order_by
+  </select>
+
+</mapper>

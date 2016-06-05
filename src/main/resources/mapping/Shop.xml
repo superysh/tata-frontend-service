@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.ShopMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.Shop" >
+    <id column="uuid" property="uuid"  />
+    <result column="mobile" property="mobile"  />
+    <result column="password" property="password"  />
+    <result column="invite_code" property="inviteCode"  />
+    <result column="name" property="name"  />
+    <result column="province_id" property="provinceId"  />
+    <result column="city_id" property="cityId"  />
+    <result column="area_id" property="areaId"  />
+    <result column="address" property="address"  />
+    <result column="phone" property="phone"  />
+    <result column="biz_license_path" property="bizLicensePath"  />
+    <result column="id_card_front" property="idCardFront"  />
+    <result column="id_card_back" property="idCardBack"  />
+    <result column="id_card_hand" property="idCardHand"  />
+    <result column="status" property="status"  />
+    <result column="return_rate" property="returnRate"  />
+    <result column="offline_money" property="offlineMoney"  />
+    <result column="type" property="type"  />
+    <result column="create_time" property="createTime"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    uuid, mobile,password,invite_code,name,province_id,city_id,area_id,address,phone,biz_license_path,id_card_front,id_card_back,id_card_hand,status,return_rate,offline_money,type,create_time
+  </sql>
+
+
+  <insert id="insert" parameterType="rml.model.Shop" >
+    insert into tb_shop(uuid,mobile,password,invite_code,name,province_id,city_id,area_id,address,phone,biz_license_path,id_card_front,id_card_back,id_card_hand,status,create_time,offline_money)
+    values (#{uuid},#{mobile},#{password},#{inviteCode},#{name},#{provinceId},#{cityId},#{areaId},#{address},#{phone},#{bizLicensePath},#{idCardFront},#{idCardBack},#{idCardHand},#{status},#{createTime},0
+    )
+  </insert>
+
+  <select id="getShopTotal"   resultType="java.lang.Integer">
+    select
+        count(uuid)
+    from tb_shop
+  </select>
+
+  <select id="getShops"   resultMap="BaseResultMap" parameterType="rml.model.Shop">
+    select
+    <include refid="Base_Column_List" />
+    from tb_shop
+    order by create_time desc
+    limit #{startSize},#{pageSize}
+  </select>
+
+  <select id="getByMobile"   resultMap="BaseResultMap"  parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List" />
+    from tb_shop
+    where mobile=#{mobile}
+  </select>
+
+
+  <select id="getShop"   resultMap="BaseResultMap"  parameterType="rml.model.Shop">
+    select
+    <include refid="Base_Column_List" />
+    from tb_shop
+    where mobile=#{mobile}
+    and password= #{password}
+  </select>
+
+  <insert id="updatePassword" parameterType="rml.model.Shop" >
+    update tb_shop set password = #{password} where mobile=#{mobile}
+  </insert>
+
+  <insert id="updateMoney" parameterType="rml.model.Shop" >
+    update tb_shop set offline_money = offline_money+#{offlineMoney} where uuid=#{uuid}
+  </insert>
+
+  <insert id="updateStatus" parameterType="rml.model.Shop" >
+    update tb_shop set status = #{status} where uuid=#{uuid}
+  </insert>
+
+  <select id="getShopById"   resultMap="BaseResultMap"  parameterType="rml.model.Shop">
+    select
+    <include refid="Base_Column_List" />
+    from tb_shop
+    where uuid=#{uuid}
+  </select>
+
+  <insert id="updateType" parameterType="rml.model.Shop" >
+    update tb_shop set type = #{type} where uuid=#{uuid}
+  </insert>
+</mapper>

@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>jQuery UI Tabs - Default functionality</title>
+    <link rel="stylesheet" href="css/jquery-ui.min.css">
+    <link rel="stylesheet" href="css/samples.css">
+    <link rel="stylesheet" href="css/blueimp-gallery.min.css">
+    <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+    <link rel="stylesheet" href="css/jquery.fileupload.css">
+    <link rel="stylesheet" href="css/jquery.fileupload-ui.css">
+    <!-- CSS adjustments for browsers with JavaScript disabled -->
+    <noscript><link rel="stylesheet" href="css/jquery.fileupoad-noscript.css"></noscript>
+    <noscript><link rel="stylesheet" href="css/jquery.fileupload-ui-noscript.css"></noscript>
+    <script language="JavaScript" src="js/jquery-1.11.1.js"></script>
+    <script language="JavaScript" src="js/jquery.validate.min.js"></script>
+    <script>
+        $(function() {
+            $( "#tabs" ).tabs();
+        });
+        $(document).ready(function() {
+
+            $("#commentForm").validate();
+            jQuery.ajax({
+                type: "GET",
+                url: baseUrl + "/Product/Categories/ROOT",
+                data: {"moduleId": 1},
+                dataType: "json",
+                async:false,
+                success: function (data, status, jqXHR) {
+                    $(data.rows).each(function(index,element){
+                        uuid = element.uuid;
+                        var selObj = $("#category");
+                        selObj.append("<option value='"+uuid+"'>"+element.name+"</option>");
+                    });
+                },
+                error: ''
+            });
+            jQuery.ajax({
+                type: "GET",
+                url: baseUrl + "/Product/Brands/Product/Add",
+                dataType: "json",
+                async:false,
+                data: {"moduleId": 1},
+                success: function (data, status, jqXHR) {
+                    $(data).each(function(index,element){
+                        uuid = element.uuid;
+                        var selObj = $("#brands");
+                        selObj.append("<option value='"+uuid+"' name='"+element.name+"'>"+element.name+"</option>");
+                    });
+                },
+                error: ''
+            });
+            jQuery.ajax({
+                type: "GET",
+                url: baseUrl + "/Product/Properties",
+                data: {"moduleId": 1},
+                dataType: "json",
+                success: function (data, status, jqXHR) {
+                    $(data).each(function(index,element){
+                        uuid = element.uuid;
+                        var selObj = $("#key");
+                        selObj.append("<option value='"+uuid+"' key='"+element.key+"'>"+element.key+"</option>");
+                    });
+                },
+                error: ''
+            });
+            $('#category').change(function(){
+                var p1=$(this).children('option:selected').val();//这就是selected的值
+                addChild(p1,"category1");
+                $("#categoryValue").val($(this).children('option:selected').text());
+                $("#categoryId").val(p1);
+            })
+            $('#category1').change(function(){
+                var p1=$(this).children('option:selected').val();//这就是selected的值
+                addChild(p1,"category2");
+                $("#categoryValue").val($(this).children('option:selected').text());
+                $("#categoryId").val(p1);
+            })
+            $('#category2').change(function(){
+                var p1=$(this).children('option:selected').val();//这就是selected的值
+                $("#categoryValue").val($(this).children('option:selected').text());
+                $("#categoryId").val(p1);
+            })
+        });
+
+        function addChild(uuid,toId){
+            jQuery.ajax({
+                type: "GET",
+                url: baseUrl + "/Product/Categories/Children",
+                data: {"moduleId": 1,"uuid":uuid},
+                dataType: "json",
+                async:false,
+                success: function (data, status, jqXHR) {
+                    $(data.data).each(function(index,element){
+                        var xData = element.toString().split(",");
+                        var uuid;
+                        $(xData).each(function(index,element1) {
+                            if (index == 0) {
+                                uuid = element1;
+                            }else if(index==1){
+                                var selObj = $("#"+toId+"");
+                                selObj.append("<option value='"+uuid+"'>"+element1+"</option>");
+
+                            }else{
+
+                            }
+                        });
+                    });
+
+                },
+                error: ''
+            });
+        }
+
+    </script>
+</head>
+<body style="font-size: 0.8em">
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-1">基本信息</a></li>
+        <li><a href="#tabs-2">商品属性</a></li>
+        <li><a href="#tabs-3">商品详情</a></li>
+        <li><a href="#tabs-4">商品主图</a></li>
+        <li><a href="#tabs-5">商品详情图</a></li>
+    </ul>
+    <div id="tabs-1">
+        <form class="cmxform" id="commentForm" method="get" action="">
+            <table>
+                <tr>
+                    <td>商品名称&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="name" required></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr></tr>
+                <tr style="background: whitesmoke" id="content">
+                    <td>一级分类&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <select id="category">
+                            <option>无</option>
+                        </select>&nbsp;&nbsp;二级分类&nbsp;&nbsp;<select id="category1">
+                            <option>无</option>
+                        </select>三级分类&nbsp;&nbsp;<select id="category2">
+                            <option>无</option>
+                        </select> <input type="button" value="添加分类" onclick="addCategory();"></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            <table id="tip">
+                <tr style="background: whitesmoke"  style="font-size: 0.75em">
+                    <input type="hidden" readonly id="categoryValue">
+                    <input type="hidden" id="categoryId">
+                    <input type="hidden" value="" id="totalId"><input id="categoryCount" type="hidden" value="0"></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            <tr style="background: whitesmoke"  style="font-size: 0.75em">
+                <td>商品品牌&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<select id="brands" required>
+                    <option>无</option>
+                </select>&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" onclick="addBrand()" value="添加品牌"/><input type="hidden"  id="brandIds" /></td>
+                <td><input type="hidden" id="brandCount" value="0"></td>
+                <td>库存数量:<input id="storage" value="20"></td>
+            </tr>
+            </table>
+            <table id="brandList" style="width: 70%">
+            </table>
+            <table style="width: 70%">
+                <tr style="background: whitesmoke"  style="font-size: 0.75em">
+                    <td>是否上架销售&nbsp;&nbsp;上架:<input type="radio" name="isOnline" checked value="0" >下架: <input type="radio" name="isOnline"  value="'1" > </td>
+                    <td>是否在首页显示&nbsp;&nbsp;不显示:<input type="radio" name="isTop" checked value="0" >显示: <input type="radio" name="isTop"  value="1" ></td>
+                    <td></td>
+                </tr>
+
+                <tr style="background: whitesmoke"  style="font-size: 0.75em">
+                    <td>商品状态&nbsp;&nbsp;<label><input name="status" type="checkbox" value="1" />促销 </label>
+                        <label><input name="status" type="checkbox" value="2" />热卖 </label>
+                        <label><input name="status" type="checkbox" value="3" />新品 </label>
+                        <label><input name="status" type="checkbox" value="4" />团购 </label>
+                        <label><input name="status" type="checkbox" value="5" />众筹</label>
+                        <label><input name="status" type="checkbox" value="6" />秒杀 </label>
+                        <label><input name="status" type="checkbox" value="7" />限购 </label>
+                        <label><input name="status" type="checkbox" value="8" />试用 </label>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr style="background: whitesmoke"  style="font-size: 0.75em" number>
+                    <td>排序&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="order" id="order"> </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr style="background: whitesmoke"  style="font-size: 0.75em">
+                    <td>商品关键词:&nbsp;&nbsp;&nbsp;<input type="text" name="keywords" id="keywords"> </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr style="background: whitesmoke"  style="font-size: 0.75em">
+                    <td> </td>
+                    <td></td>
+                    <td><input type="button" name="order" onclick="modify();" value="修改"></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div id="tabs-2">
+        <table id="property">
+            <tr style="background: whitesmoke"  style="font-size: 0.75em">
+                <td>库存警告:&nbsp;<input type="text" name="storageAlert" id="storageAlert" > </td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr style="background: whitesmoke"  style="font-size: 0.75em">
+                <td>商品积分:&nbsp;<input type="text" id="integral"   name="integral"> </td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr style="background: whitesmoke"  style="font-size: 0.75em">
+                <td></td>
+                <td></td>
+                <td align="right"><input type="button" value="添加属性" onclick="CreateDom()"><input type="hidden" id="propertyCount" value="0"> </td>
+            </tr>
+        </table>
+    </div>
+    <div id="tabs-3">
+        <div id="editor">
+
+        </div>
+        PC端内容:<input type="radio" name="type" checked value="0" >H5端内容: <input type="radio" name="type"  value="'1" >
+    </div>
+    <div id="tabs-4">
+        <!-- The file upload form used as target for the file upload widget -->
+        <script language="JavaScript" src="js/layer/layer.js"></script>
+
+        <form>
+
+        </form>
+
+        <!-- The file upload form used as target for the file upload widget -->
+        <form id="fileupload" action="//jquery-file-upload.appspot.com/" method="POST" enctype="multipart/form-data">
+            <!-- Redirect browsers with JavaScript disabled to the origin page -->
+            <noscript><input type="hidden" name="redirect" value="https://blueimp.github.io/jQuery-File-Upload/"></noscript>
+            <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+            <div class="fileupload-buttonbar">
+                <div class="fileupload-buttons">
+                    <!-- The fileinput-button span is used to style the file input field as button -->
+            <span class="fileinput-button">
+                <span>Add files...</span>
+                <input type="file" name="files[]" multiple>
+            </span>
+                    <button type="submit" class="start">Start upload</button>
+                    <button type="reset" class="cancel">Cancel upload</button>
+                    <button type="button" class="delete">Delete</button>
+                    <input type="checkbox" class="toggle">
+                    <!-- The global file processing state -->
+                    <span class="fileupload-process"></span>
+                </div>
+                <!-- The global progress state -->
+                <div class="fileupload-progress fade" style="display:none">
+                    <!-- The global progress bar -->
+                    <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+                    <!-- The extended global progress state -->
+                    <div class="progress-extended">&nbsp;</div>
+                </div>
+            </div>
+            <!-- The table listing the files available for upload/download -->
+            <table role="presentation"><tbody class="files"></tbody></table>
+        </form>
+        <input type="text" id="imgs">
+        <br>
+        <!-- The template to display files available for upload -->
+        <script id="template-upload" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-upload fade">
+        <td>
+            <span class="preview"></span>
+        </td>
+        <td>
+            <p class="name">{%=file.name%}</p>
+            <strong class="error"></strong>
+        </td>
+        <td>
+            <p class="size">Processing...</p>
+            <div class="progress"></div>
+        </td>
+        <td>
+            {% if (!i && !o.options.autoUpload) { %}
+                <button class="start" disabled>Start</button>
+            {% } %}
+            {% if (!i) { %}
+                <button class="cancel">Cancel</button>
+            {% } %}
+        </td>
+    </tr>
+{% } %}
+</script>
+        <!-- The template to display files available for download -->
+        <script id="template-download" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-download fade">
+        <td>
+            <span class="preview">
+                {% if (file.thumbnailUrl) { %}
+                    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery><img src="{%=file.thumbnailUrl%}"></a>
+                {% } %}
+            </span>
+        </td>
+        <td>
+            <p class="name">
+                <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" {%=file.thumbnailUrl?'data-gallery':''%}>{%=file.name%}</a>
+            </p>
+            {% if (file.error) { %}
+                <div><span class="error">Error</span> {%=file.error%}</div>
+            {% } %}
+        </td>
+        <td>
+            <span class="size">{%=o.formatFileSize(file.size)%}</span>
+        </td>
+        <td>
+            <button class="delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>Delete</button>
+            <input type="checkbox" name="delete" value="1" class="toggle">
+        </td>
+    </tr>
+{% } %}
+</script>
+        <script src="js/jquery-ui.min.js"></script>
+        <!-- The Templates plugin is included to render the upload/download listings -->
+        <script src="js/tmpl.min.js"></script>
+        <!-- The Load Image plugin is included for the preview images and image resizing functionality -->
+        <script src="js/load-image.all.min.js"></script>
+        <!-- The Canvas to Blob plugin is included for image resizing functionality -->
+        <script src="js/canvas-to-blob.min.js"></script>
+        <!-- blueimp Gallery script -->
+        <script src="js/jquery.blueimp-gallery.min.js"></script>
+        <!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+        <script src="js/jquery.iframe-transport.js"></script>
+        <!-- The basic File Upload plugin -->
+        <script src="js/jquery.fileupload.js"></script>
+        <!-- The File Upload processing plugin -->
+        <script src="js/jquery.fileupload-process.js"></script>
+        <!-- The File Upload image preview & resize plugin -->
+        <script src="js/jquery.fileupload-image.js"></script>
+        <!-- The File Upload audio preview plugin -->
+        <script src="js/jquery.fileupload-audio.js"></script>
+        <!-- The File Upload video preview plugin -->
+        <script src="js/jquery.fileupload-video.js"></script>
+        <!-- The File Upload validation plugin -->
+        <script src="js/jquery.fileupload-validate.js"></script>
+        <!-- The File Upload user interface plugin -->
+        <script src="js/jquery.fileupload-ui.js"></script>
+        <!-- The File Upload jQuery UI plugin -->
+        <script src="js/jquery.fileupload-jquery-ui.js"></script>
+        <!-- The main application script -->
+        <script src="js/main.js"></script>
+        <script>
+            // Initialize the jQuery UI theme switcher:
+            $('#theme-switcher').change(function () {
+                var theme = $('#theme');
+                theme.prop(
+                        'href',
+                        theme.prop('href').replace(
+                                /[\w\-]+\/jquery-ui.css/,
+                                $(this).val() + '/jquery-ui.css'
+                        )
+                );
+            });
+        </script>
+        <script src="js/jquery-ui.min.js"></script>
+        <script src="js/ckeditor.js"></script>
+        <script src="js/sample.js"></script>
+        <script src="js/sample.js"></script>
+        <script language="JavaScript" src="js/config.js"></script>
+        <script language="JavaScript" src="js/layer/layer.js"></script>
+        <script language="JavaScript" src="js/layer/extend/layer.ext.js"></script>
+        <table id="slides"></table>
+    </div>
+    <div id="tabs-5">
+        <!-- The file upload form used as target for the file upload widget -->
+        <script language="JavaScript" src="js/layer/layer.js"></script>
+        <!-- The file upload form used as target for the file upload widget -->
+        <form id="fileupload2" action="//jquery-file-upload.appspot.com/" method="POST" enctype="multipart/form-data">
+            <!-- Redirect browsers with JavaScript disabled to the origin page -->
+            <noscript><input type="hidden" name="redirect" value="https://blueimp.github.io/jQuery-File-Upload/"></noscript>
+            <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+            <div class="fileupload-buttonbar">
+                <div class="fileupload-buttons">
+                    <!-- The fileinput-button span is used to style the file input field as button -->
+            <span class="fileinput-button">
+                <span>Add files...</span>
+                <input type="file" name="files[]" multiple>
+            </span>
+                    <button type="submit" class="start">Start upload</button>
+                    <button type="reset" class="cancel">Cancel upload</button>
+                    <button type="button" class="delete">Delete</button>
+                    <input type="checkbox" class="toggle">
+                    <!-- The global file processing state -->
+                    <span class="fileupload-process"></span>
+                </div>
+                <!-- The global progress state -->
+                <div class="fileupload-progress fade" style="display:none">
+                    <!-- The global progress bar -->
+                    <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+                    <!-- The extended global progress state -->
+                    <div class="progress-extended">&nbsp;</div>
+                </div>
+            </div>
+            <!-- The table listing the files available for upload/download -->
+            <table role="presentation"><tbody class="files"></tbody></table>
+        </form>
+        <input type="text" id="imgs2">
+        <br>
+        <!-- The template to display files available for upload -->
+        <script id="template-upload1" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-upload fade">
+        <td>
+            <span class="preview"></span>
+        </td>
+        <td>
+            <p class="name">{%=file.name%}</p>
+            <strong class="error"></strong>
+        </td>
+        <td>
+            <p class="size">Processing...</p>
+            <div class="progress"></div>
+        </td>
+        <td>
+            {% if (!i && !o.options.autoUpload) { %}
+                <button class="start" disabled>Start</button>
+            {% } %}
+            {% if (!i) { %}
+                <button class="cancel">Cancel</button>
+            {% } %}
+        </td>
+    </tr>
+{% } %}
+</script>
+        <!-- The template to display files available for download -->
+        <script id="template-download1" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-download fade">
+        <td>
+            <span class="preview">
+                {% if (file.thumbnailUrl) { %}
+                    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery><img src="{%=file.thumbnailUrl%}"></a>
+                {% } %}
+            </span>
+        </td>
+        <td>
+            <p class="name">
+                <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" {%=file.thumbnailUrl?'data-gallery':''%}>{%=file.name%}</a>
+            </p>
+            {% if (file.error) { %}
+                <div><span class="error">Error</span> {%=file.error%}</div>
+            {% } %}
+        </td>
+        <td>
+            <span class="size">{%=o.formatFileSize(file.size)%}</span>
+        </td>
+        <td>
+            <button class="delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>Delete</button>
+            <input type="checkbox" name="delete" value="1" class="toggle">
+        </td>
+    </tr>
+{% } %}
+</script>
+        <script src="js/jquery-ui.min.js"></script>
+        <!-- The Templates plugin is included to render the upload/download listings -->
+        <script src="js/tmpl.min.js"></script>
+        <!-- The Load Image plugin is included for the preview images and image resizing functionality -->
+        <script src="js/load-image.all.min.js"></script>
+        <!-- The Canvas to Blob plugin is included for image resizing functionality -->
+        <script src="js/canvas-to-blob.min.js"></script>
+        <!-- blueimp Gallery script -->
+        <script src="js/jquery.blueimp-gallery.min.js"></script>
+        <!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+        <script src="js/jquery.iframe-transport.js"></script>
+        <!-- The basic File Upload plugin -->
+        <script src="js/jquery.fileupload.js"></script>
+        <!-- The File Upload processing plugin -->
+        <script src="js/jquery.fileupload-process.js"></script>
+        <!-- The File Upload image preview & resize plugin -->
+        <script src="js/jquery.fileupload-image.js"></script>
+        <!-- The File Upload audio preview plugin -->
+        <script src="js/jquery.fileupload-audio.js"></script>
+        <!-- The File Upload video preview plugin -->
+        <script src="js/jquery.fileupload-video.js"></script>
+        <!-- The File Upload validation plugin -->
+        <script src="js/jquery.fileupload-validate.js"></script>
+        <!-- The File Upload user interface plugin -->
+        <script src="js/jquery.fileupload-ui.js"></script>
+        <!-- The File Upload jQuery UI plugin -->
+        <script src="js/jquery.fileupload-jquery-ui.js"></script>
+        <!-- The main application script -->
+        <script>
+            // Initialize the jQuery UI theme switcher:
+            $('#theme-switcher').change(function () {
+                var theme = $('#theme');
+                theme.prop(
+                        'href',
+                        theme.prop('href').replace(
+                                /[\w\-]+\/jquery-ui.css/,
+                                $(this).val() + '/jquery-ui.css'
+                        )
+                );
+            });
+        </script>
+        <script src="js/jquery-ui.min.js"></script>
+        <script src="js/ckeditor.js"></script>
+        <script src="js/sample.js"></script>
+        <script language="JavaScript" src="js/config.js"></script>
+        <script language="JavaScript" src="js/layer/layer.js"></script>
+        <script language="JavaScript" src="js/layer/extend/layer.ext.js"></script>
+        <table id="slides1"></table>
+    </div>
+</div>
+</body>
+<script>
+    function GetRequest(strName)
+    {
+        var strHref = window.location.href; //获取Url字串
+        var intPos = strHref.indexOf("?");  // 参数开始位置
+        var strRight = strHref.substr(intPos + 1);
+        var arrTmp = strRight.split(","); //参数分割符
+        for(var i = 0; i < arrTmp.length; i++)
+        {
+            var arrTemp = arrTmp[i].split("=");
+            if(arrTemp[0].toUpperCase() == strName.toUpperCase()) return arrTemp[1];
+        }
+        return "";
+    }
+
+    var uuid = GetRequest("uuid");
+
+
+    initSample();
+    function modify() {
+        var uuid = GetRequest("uuid");
+        var name = $("#name").val();
+        var brandIds = $("#brandIds").val();
+        var categoryId = $("#categoryId").val();
+        var brandId = $('#brands').find('option:selected').attr('value');
+        var brandName = $('#brands').find('option:selected').attr('name');
+        var isOnline = $('input[name="isOnline"]:checked').val();
+        var isTop = $('input[name="isTop"]:checked').val();
+        var order = $("#order").val();
+        var keywords = $("#keywords").val();
+        var storageAlert = $("#storageAlert").val();
+        var integral = $("#integral").val();
+        var storage = $("#storage").val();
+        var content = CKEDITOR.instances.editor.document.innerHTML;
+        console.info(brandIds);
+        if(name==null||name==""){
+            layer.msg('商品名称不得为空', {icon: 5});
+            $("#name").focus();
+            return;
+        }
+        if(brandIds==null||brandIds==""){
+            layer.msg('商品品牌不得为空', {icon: 5});
+            $("#brandName").focus();
+            return;
+        }
+        if(brandId==null||brandId==""){
+            layer.msg('商品品牌不得为空', {icon: 5});
+            $("#brandName").focus();
+            return;
+        }
+        if(storage==null||storage==""){
+            layer.msg('库存数量不能为空', {icon: 5});
+            $("#storage").focus();
+            return;
+        }
+        if(isNaN($('#storage').val())){
+            layer.msg('库存数量必须为数字', {icon: 5});
+            $("#storage").focus();
+            return;
+        }
+        if(order==null||order==""){
+            layer.msg('商品顺序不得为空', {icon: 5});
+            $("#value").focus();
+            return;
+        }
+        if(storageAlert==null||storageAlert==""){
+            layer.msg('商品库存警告不得为空', {icon: 5});
+            $("#storageAlert").focus();
+            return;
+        }
+        if(integral==null||integral==""){
+            layer.msg('商品积分不得为空', {icon: 5});
+            $("#storageAlert").focus();
+            return;
+        }
+        if($("#totalId").val()==null||$("#totalId").val()==""){
+            layer.msg('商品分类不得为空', {icon: 5});
+            return;
+        }
+        var count = $("#propertyCount").val();
+        var propertyId = "";
+        var propertyKey = "";
+        var propertyValue = "";
+        var price = "";
+        var propertyPrice = "";
+        for (var i=1;i<=count;i++){
+            if(propertyId!=""){
+                propertyId = propertyId+","+$("#key"+i).find('option:selected').attr('value');
+                propertyKey = propertyKey+","+$("#key"+i).find('option:selected').attr('key');
+                propertyValue = propertyValue+","+$("#value"+i).val();
+                propertyPrice = propertyPrice+","+$("#price"+i).val();
+            }else{
+                propertyId = propertyId+$("#key"+i).find('option:selected').attr('value');
+                propertyKey = propertyKey+$("#key"+i).find('option:selected').attr('key');
+                propertyValue = propertyValue+$("#value"+i).val();
+                propertyPrice = propertyPrice+$("#price"+i).val();
+            }
+        }
+        jQuery.ajax({
+            type: "POST",
+            url: baseUrl + "/Product/Product/Update",
+            contentType: 'application/json;charset=UTF-8',
+            data: JSON.stringify({"categoryIds":$("#totalId").val(),"moduleId":1,"moduleName":"他它国际","name":name,"categoryId":categoryId,"brandId":brandId,"brandName":brandName,
+                "propertyId":propertyId,"propertyKey":propertyKey,"propertyValue":propertyValue,"isOnline":isOnline,"order":order,"keyWords":keywords,"storageAlert":storageAlert,
+                "integral":integral,"isTop":isTop,"backPrice":propertyPrice,"ldescPc":CKEDITOR.instances.editor.element.$.innerHTML,"imgs":$("#imgs2").val(),"storage":storage,"imgsMain":$("#imgs").val(),"uuid":uuid,"brandIds":brandIds
+            }),
+            dataType: "json",
+            success: function (data, status, jqXHR) {
+                layer.msg("商品上传成功", {icon: 4});
+                setTimeout("window.location.href='productList-suit.html'",1000);
+            },
+            error: ''
+        });
+    }
+
+    jQuery.ajax({
+        type: "GET",
+        url: baseUrl + "/Product/Product/Front",
+        data: {"uuid": uuid,"randomKey":"bee410c0-7164-44ab-b6f1-980bbf6baa02","secretKey":"1e800a0d337900655bb47deefe0bb483"},
+        dataType: "json",
+        success: function (data, status, jqXHR) {
+            var info = data.returnObject;
+            $("#name").val(info.name);
+            $("#brands").val(info.brandId);
+            $("#storageAlert").val(info.storageAlert);
+            $("#storage").val(info.storage);
+            $("#order").val(info.order);
+            $("#keywords").val(info.keyWords);
+            $("#categoryId").val(info.categoryId);
+            $("#integral").val(info.integral);
+            $("#isOnline").val(info.isOnline);
+            $("#isTop").val();
+            if(info.isTop==0){
+                $("input[name='isTop']").get(0).checked=true;
+            }else{
+                $("input[name='isTop']").get(1).checked=true;
+            }
+            if(info.categoryIds!=null){
+                var cIds = new Array();
+                cIds = info.categoryIds.split(",");
+                for (var i=0;i<cIds.length ;i++ ) {
+                    jQuery.ajax({
+                        type: "GET",
+                        url: baseUrl + "/Category/Category",
+                        data: {"uuid":cIds[i]},
+                        dataType: "json",
+                        async:false,
+                        success: function (data, status, jqXHR) {
+                            if(data.returnObject!=null){
+                                $("#categoryValue").val(data.returnObject.name);
+                                var count = $("#categoryCount").val();
+                                var totalId = $("#totalId").val();
+                                var tr = "<tr style='background: whitesmoke'  style='font-size: 0.75em' id='categoryTag"+count+"'><td>分类名称: &nbsp;&nbsp;&nbsp; &nbsp;"+data.returnObject.name+" <input type='button' value='删除分类' onclick=removeCategory("+count+",'"+data.returnObject.uuid+"')></td><td> </td></tr>";
+                                var ul = $(tr).appendTo($("#tip"));
+                                count++;
+                                $("#categoryCount").val(count);
+                                var idValue = $("#totalId").val();
+                                if(idValue==""){
+                                    $("#totalId").val(data.returnObject.uuid);
+                                }else{
+                                    idValue = idValue+","+data.returnObject.uuid;
+                                    $("#totalId").val(idValue);
+                                }
+                            }
+                        },
+                        error: ''
+                    });
+                }
+            }
+            if(info.brandIds!=null){
+                var ids = new Array();
+
+                ids = info.brandIds.split(",");
+                for (var i=0;i<ids.length ;i++ )
+                {
+                    jQuery.ajax({
+                        type: "GET",
+                        url: baseUrl + "/Product/Brand",
+                        data: {"uuid":ids[i]},
+                        dataType: "json",
+                        async:false,
+                        success: function (data, status, jqXHR) {
+                            if(data.returnObject!=null){
+                                var tr = "<tr style='background: whitesmoke'  style='font-size: 0.75em' id='brandTag"+i+"'><td>品牌名称: &nbsp;&nbsp;&nbsp; &nbsp;"+data.returnObject.name+" <input type='button' value='删除品牌' onclick=removeBrand("+i+",'"+data.returnObject.uuid+"')></td><td><input type='hidden' id='11' value='"+data.returnObject.uuid+"'>&nbsp;&nbsp;&nbsp;</td><td> </td></tr>";
+                                var ul = $(tr).appendTo($("#brandList"));
+                                var brandIds = $("#brandIds").val();
+                                if(brandIds==""){
+                                    $("#brandIds").val(data.returnObject.uuid);
+                                }else{
+                                    brandIds = brandIds+","+data.returnObject.uuid;
+                                    $("#brandIds").val(brandIds);
+                                }
+                            }
+                        },
+                        error: ''
+                    });
+                }
+                $("#brandCount").val(ids.length);
+            }
+
+            $(info.propertyValues).each(function(index,element){
+                var count = $("#propertyCount").val();
+                ++count;
+                var key = "key"+count;
+                var selObj = $(key);
+                var tr = "<tr style='background: whitesmoke'  style='font-size: 0.75em'><td>商品属性: &nbsp; <select id='"+key+"'> <option>无</option> </select></td><td>属性值:<input type='text' id='value"+count+"' value='"+element.propertyValue+"'> </td><td>价格:<input type='text' id='price"+count+"' value='"+element.price/100+"'> </td></tr>";
+                var ul = $(tr).appendTo($("#property"));
+                jQuery.ajax({
+                    type: "GET",
+                    url: baseUrl + "/Product/Properties",
+                    data: {"moduleId":1},
+                    dataType: "json",
+                    async:false,
+                    success: function (data, status, jqXHR) {
+                        $(data).each(function(index,element){
+                            uuid = element.uuid;
+                            var selObj = $("#key"+count);
+                            selObj.append("<option value='"+uuid+"' key='"+element.key+"'>"+element.key+"</option>");
+                        });
+                    },
+                    error: ''
+                });
+                $("#key"+count).val(element.propertyId);
+                $("#propertyCount").val(count);
+            });
+            var imgs = info.imgsMain.split(",");
+            $(imgs).each(function(index,element){
+                var tr = '<tr id="'+index+'"><td><img src="'+element+'" /> </td><td><input type="button" value="删除图片" onclick=deleteImg("'+element+'","'+index+'")></td>></tr>';
+                $(tr).appendTo($("#slides"));
+                var imgs = $("#imgs").val();
+                if(imgs!=""){
+                    imgs = imgs+","+element;
+                    $("#imgs").val(imgs);
+                }else{
+                    imgs = imgs+element;
+                    $("#imgs").val(imgs);
+                }
+            });
+            var img = info.imgs.split(",");
+            $(img).each(function(index1,element1){
+                var tr = '<tr id="2'+index1+'"><td><img src="'+element1+'" /> </td><td><input type="button" value="删除图片" onclick=deleteImg1("'+element1+'","'+index1+'")></td>></tr>';
+                $(tr).appendTo($("#slides1"));
+                var imgs = $("#imgs2").val();
+                if(imgs!=""){
+                    imgs = imgs+","+element1;
+                    $("#imgs2").val(imgs);
+                }else{
+                    imgs = imgs+element1;
+                    $("#imgs2").val(imgs);
+                }
+            });
+        },
+        error: ''
+    });
+    function CreateDom() {
+        var count = $("#propertyCount").val();
+        ++count
+        var tr = "<tr style='background: whitesmoke'  style='font-size: 0.75em'><td>商品属性: &nbsp;<select id='key"+count+"'><option>无</option></select></td><td>属性值:<input type='text' id='value"+count+"'> </td><td>价格:<input type='text' id='price"+count+"'> </td></tr>";
+        var ul = $(tr).appendTo($("#property"));
+        jQuery.ajax({
+            type: "GET",
+            url: baseUrl + "/Product/Properties",
+            data: {"moduleId":1},
+            dataType: "json",
+            async: false,
+            success: function (data, status, jqXHR) {
+                $(data).each(function(index,element){
+                    uuid = element.uuid;
+                    var selObj = $("#key"+count);
+                    selObj.append("<option value='"+uuid+"' key='"+element.key+"'>"+element.key+"</option>");
+                });
+            },
+            error: ''
+        });
+        $("#propertyCount").val(count);
+    }
+    function deleteImg(pic,index){
+        var imgs = $("#imgs").val();
+        if(imgs.length>pic.length){
+            imgs = imgs.replace(","+pic,"");
+            imgs = imgs.replace(pic+",","")
+            imgs = imgs.replace(pic,"")
+        }else{
+            imgs = imgs.replace(pic+",","")
+            imgs = imgs.replace(pic,"")
+        }
+        $("#imgs").val(imgs);
+        $("#"+index+"").remove();
+    }
+    function deleteImg1(pic,index){
+        var imgs = $("#imgs2").val();
+        if(imgs.length>pic.length){
+            imgs = imgs.replace(","+pic,"");
+            imgs = imgs.replace(pic+",","")
+            imgs = imgs.replace(pic,"")
+        }else{
+            imgs = imgs.replace(pic+",","")
+            imgs = imgs.replace(pic,"")
+        }
+        $("#imgs2").val(imgs);
+        $("#2"+index+"").remove();
+    }
+    function addBrand(){
+        var count = $("#brandCount").val();
+        count++;
+        var brandId = $('#brands').find('option:selected').attr('value');
+        var brandName = $('#brands').find('option:selected').attr('name');
+        var brandIds = $("#brandIds").val();
+        console.info(brandId);
+        console.info(brandIds);
+        if(brandIds.indexOf(brandId)!=-1){
+            alert("请勿重复添加相同品牌");
+            return;
+        }
+        if(brandId!=undefined){
+            var tr = "<tr style='background: whitesmoke'  style='font-size: 0.75em' id='brandTag"+count+"'><td>品牌名称: &nbsp;&nbsp;&nbsp; &nbsp;"+brandName+" <input type='button' value='删除品牌' onclick=removeBrand("+count+",'"+brandId+"')></td><td>&nbsp;&nbsp;&nbsp;</td><td> </td></tr>";
+            var ul = $(tr).appendTo($("#brandList"));
+        }
+        $("#brandCount").val(count);
+        var brandIds = $("#brandIds").val();
+        if(brandIds==""){
+            $("#brandIds").val(brandId);
+        }else{
+            brandIds = brandIds+","+brandId;
+            $("#brandIds").val(brandIds);
+        }
+    }
+    function removeBrand(index,id){
+        $("#brandTag"+index).remove();
+        var brandIds = $("#brandIds").val();
+        console.info(id);
+        console.info(brandIds);
+        brandIds = brandIds.replace(","+id,"");
+        brandIds =   brandIds.replace(id,"");
+        console.info(brandIds);
+        $("#brandIds").val(brandIds);
+    }
+
+    function addCategory(){
+        var count = $("#categoryCount").val();
+        var categoryId = $("#categoryId").val();
+        var categoryValue = $("#categoryValue").val();
+        var totalId = $("#totalId").val();
+        if(totalId.indexOf(categoryId)!=-1){
+            alert("请勿重复添加相同分类");
+            return;
+        }
+        var tr = "<tr style='background: whitesmoke'  style='font-size: 0.75em' id='categoryTag"+count+"'><td>分类名称: &nbsp;&nbsp;&nbsp; &nbsp;"+categoryValue+" <input type='button' value='删除分类' onclick=removeCategory("+count+",'"+categoryId+"')></td><td> </td></tr>";
+        var ul = $(tr).appendTo($("#tip"));
+        count++;
+        $("#categoryCount").val(count);
+        var idValue = $("#totalId").val();
+        if(idValue==""){
+            $("#totalId").val(categoryId);
+        }else{
+            idValue = idValue+","+categoryId;
+            $("#totalId").val(idValue);
+        }
+    }
+
+    function removeCategory(index,categoryId){
+        $("#categoryTag"+index).remove();
+        var totalId = $("#totalId").val();
+        totalId = totalId.replace(","+categoryId,"");
+        totalId =   totalId.replace(categoryId,"");
+        $("#totalId").val(totalId);
+
+    }
+</script>
+</html>

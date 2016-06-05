@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.ProductCollectionMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.ProductCollection" >
+    <id column="uuid" property="uuid"  />
+    <result column="product_id" property="productId"  />
+    <result column="user_id" property="userId"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    uuid,product_id,user_id
+  </sql>
+
+
+  <insert id="delete" parameterType="rml.model.ProductCollection" >
+    update tb_product_collection set record_status = 0 where user_id=#{userId} and product_id=#{productId}
+  </insert>
+
+
+  <insert id="insert" parameterType="rml.model.ProductCollection" >
+    insert into tb_product_collection(uuid,product_id,user_id,create_time,record_status)
+    values (#{uuid},#{productId},#{userId},#{createTime},1
+    )
+  </insert>
+
+  <select id="getUserCollection"  resultMap="BaseResultMap" parameterType="rml.model.ProductCollection">
+    select
+    <include refid="Base_Column_List" />
+    FROM tb_product_collection
+    where user_id = #{userId}
+    and record_status = 1
+    order by create_time desc
+    limit #{startSize},#{pageSize}
+  </select>
+
+  <select id="getUserCollectionTotal"  resultMap="BaseResultMap" parameterType="rml.model.ProductCollection">
+    select
+    <include refid="Base_Column_List" />
+    FROM tb_product_collection
+    where user_id = #{userId}
+    and record_status = 1
+  </select>
+
+  <select id="getRepeatCollection" resultMap="BaseResultMap" parameterType="rml.model.ProductCollection">
+    select
+    <include refid="Base_Column_List" />
+    FROM tb_product_collection
+    where user_id = #{userId}
+    and product_id=#{productId}
+    and record_status = 1
+  </select>
+
+
+</mapper>

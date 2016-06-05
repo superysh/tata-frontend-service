@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.UserCouponTicketMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.UserCouponTicket" >
+    <id column="uuid" property="uuid"  />
+    <result column="year" property="year"  />
+    <result column="month" property="month"  />
+    <result column="batch_no" property="batchNo"  />
+    <result column="no" property="no"  />
+    <result column="ticket_value" property="ticketValue"  />
+    <result column="create_time" property="createTime"  />
+    <result column="update_time" property="updateTime"  />
+    <result column="record_status" property="recordStatus"  />
+    <result column="shop_name" property="shopName"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+uuid,year,month,no,create_time,update_time,record_status,shop_name
+  </sql>
+
+  <insert id="insert" parameterType="rml.model.UserCouponTicket" >
+    insert into tb_user_coupon_ticket(uuid,year,month,no,create_time,record_status,batch_no,ticket_value,shop_name)
+    values (#{uuid},#{year},#{month},#{no},#{createTime},#{recordStatus},#{batchNo},#{ticketValue},#{shopName})
+  </insert>
+
+  <select id="getMaxBatchNo" resultMap="BaseResultMap"  >
+    SELECT
+    max(batch_no) as batch_no
+    from tb_user_coupon_ticket
+  </select>
+
+
+  <select id="getTicket" resultMap="BaseResultMap"  parameterType="rml.model.UserCouponTicket" >
+    SELECT
+    <include refid="Base_Column_List" />
+    from tb_user_coupon_ticket
+    where no = #{no}
+  </select>
+
+  <insert id="disable" parameterType="rml.model.UserCouponTicket" >
+    update tb_user_coupon_ticket set record_status = 2 where no = #{no}
+  </insert>
+
+  <select id="getTicketBatch" resultMap="BaseResultMap"  parameterType="rml.model.UserCouponTicket" >
+    SELECT
+    <include refid="Base_Column_List" />
+    from tb_user_coupon_ticket
+    where batch_no = #{batchNo}
+  </select>
+
+  <select id="getTickets" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    from tb_user_coupon_ticket
+    order by create_time desc
+    limit #{startSize},#{pageSize}
+  </select>
+
+
+  <select id="getTicketsTotal" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    from tb_user_coupon_ticket
+  </select>
+
+  <insert id="updateShopName" parameterType="rml.model.UserCouponTicket" >
+    update tb_user_coupon_ticket set shop_name = #{shopName} where uuid = #{uuid}
+  </insert>
+</mapper>

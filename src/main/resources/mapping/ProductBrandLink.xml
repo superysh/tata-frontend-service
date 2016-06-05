@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.ProductBrandLinkMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.ProductBrandLink" >
+    <id column="uuid" property="uuid"  />
+    <id column="product_id" property="productId"  />
+    <id column="brand_id" property="brandId"  />
+    <id column="create_time" property="createTime"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    uuid,product_id,brand_id,create_time,update_time
+  </sql>
+
+  <insert id="insertBrand" parameterType="rml.model.ProductBrandLink" >
+    insert into tb_product_brand_link(uuid,product_id,brand_id,create_time)
+    values(#{uuid},#{productId},#{brandId},#{createTime})
+  </insert>
+
+
+  <insert id="deleteBrand" parameterType="java.lang.String" >
+    delete from tb_product_brand_link where product_id=#{productId}
+  </insert>
+
+</mapper>

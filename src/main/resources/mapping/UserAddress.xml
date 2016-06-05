@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.UserAddressMapper">
+  <resultMap id="BaseResultMap" type="rml.model.UserAddress" >
+    <result column="uuid" property="uuid"  />
+    <result column="user_id" property="userId"  />
+    <result column="address" property="address"  />
+    <result column="province_id" property="provinceId"  />
+    <result column="city_id" property="cityId"  />
+    <result column="area_id" property="areaId"  />
+    <result column="name" property="name"  />
+    <result column="is_default" property="isDefault"  />
+    <result column="status" property="status"  />
+    <result column="mobile" property="mobile"  />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+   uuid,user_id,address,province_id,city_id,area_id,name,is_default,status,city,area,province,mobile
+  </sql>
+
+
+  <insert id="insert" parameterType="rml.model.UserAddress" >
+    insert into tb_user_address(uuid,user_id,address,province_id,city_id,area_id,name,is_default,status,mobile,city,area,province)
+    values (#{uuid},#{userId},#{address},#{provinceId},#{cityId},#{areaId},#{name},#{isDefault},#{status},#{mobile},#{city},#{area},#{province}
+    )
+  </insert>
+
+  <insert id="update" parameterType="rml.model.UserAddress" >
+    update tb_user_address set address = #{address},province_id=#{provinceId},area_id=#{areaId},city_id=#{cityId},city=#{city},area=#{area},province=#{province},mobile=#{mobile},name=#{name} where uuid=#{uuid}
+  </insert>
+
+  <insert id="deleteAddress" parameterType="java.lang.String" >
+    update tb_user_address set status = 2 where uuid = #{uuid}
+  </insert>
+
+  <insert id="setDefalutZero" parameterType="java.lang.String" >
+    update tb_user_address set is_default = 0 where user_id = #{userId}
+  </insert>
+
+  <insert id="setDefalutUnique" parameterType="java.lang.String" >
+    update tb_user_address set is_default = 1 where uuid = #{uuid}
+  </insert>
+  <select id="getUserAddress" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user_address
+    where user_id = #{userId} and status = 1
+
+  </select>
+
+  <select id="getDefaultAddress" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user_address
+    where user_id = #{userId} and status = 1
+    and is_default=1
+  </select>
+
+  <select id="getAddressById" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_user_address
+    where uuid = #{uuid} and status = 1
+  </select>
+</mapper>

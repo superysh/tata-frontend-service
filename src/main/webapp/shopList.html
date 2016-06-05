@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<p lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script language="JavaScript" src="js/jquery-1.11.3.min.js"></script>
+<script language="JavaScript" src="js/jquery.pagination.js"></script>
+<script language="JavaScript" src="js/layer/layer.js"></script>
+<script language="JavaScript" src="js/config-all.js"></script>
+
+<link href="css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+<link href="js/layer/skin/layer.css" rel="stylesheet" type="text/css" />
+
+<link rel="stylesheet" href="css/pagination.css" />
+</p>
+</p>
+<label style="font-size: 0.8em">店铺管理</label>
+</p>
+</p>
+<table id="example" class="display" cellspacing="0" width="100%" class="table table-bordered table-striped table-hover" style="font-size: 0.75em;border-color:aliceblue;color:#7b7b7b" border="1">
+    <thead>
+    <tr>
+        <th >商铺名称</th>
+        <th >商铺联系人手机</th>
+        <th >商铺具体地址</th>
+        <th >创建时间</th>
+        <th >营业执照图片</th>
+        <th >身份证正面图片</th>
+        <th >身份证背面图片</th>
+        <th >身份证手持图片</th>
+        <th >商家状态</th>
+        <th >商家类别</th>
+        <th >操作</th>
+    </tr>
+    </thead>
+
+</table>
+
+
+
+<div id="Pagination" style="float: right"></div>
+</body>
+<script language="javascript" type="text/javascript">
+    function view(id){
+        console.info(id);
+        window.open("userDetail.html?uuid="+id);
+    }
+    function clear(id){
+        console.info(id);
+        $("#"+id+"").val("");
+    }
+    function getTotal(){
+        var pageCount = 0;
+    jQuery.ajax({
+        type: "GET",
+        async: false,
+        url: baseUrl + "/Shop/Shops/Count",
+        contentType: 'application/json;charset=UTF-8',
+        dataType: "json",
+        success: function (data, status, jqXHR) {
+            pageCount= data;
+        },
+        error: ''
+    });
+        return pageCount;
+    }
+    console.info(getTotal());
+    var pageIndex =0;     //页索引
+    var pageSize =5;    //每页显示的条数
+        $("#Pagination").pagination(getTotal(), {
+            callback: PageCallback,
+            prev_text: '上一页',
+            next_text: '下一页',
+            items_per_page: pageSize,
+            num_display_entries: 2,
+            current_page: pageIndex,
+            num_edge_entries: 1
+        });
+        function PageCallback(index, jq) {
+            Init(index);
+        }
+    Init(0);
+    var format = function(time, format){
+        var t = new Date(time);
+        var tf = function(i){return (i < 10 ? '0' : '') + i};
+        return format.replace(/yyyy|MM|dd|HH|mm|ss/g, function(a){
+            switch(a){
+                case 'yyyy':
+                    return tf(t.getFullYear());
+                    break;
+                case 'MM':
+                    return tf(t.getMonth() + 1);
+                    break;
+                case 'mm':
+                    return tf(t.getMinutes());
+                    break;
+                case 'dd':
+                    return tf(t.getDate());
+                    break;
+                case 'HH':
+                    return tf(t.getHours());
+                    break;
+                case 'ss':
+                    return tf(t.getSeconds());
+                    break;
+            }
+        })
+    }
+    function Init(pageIndex) {
+
+        $.ajax({
+            type: "get",
+            dataType: "json",
+            url: baseUrl+'/Shop/Shops',
+            contentType:'application/json;charset=UTF-8',
+            data: {"pageNo": pageIndex+1,"pageSize":pageSize,"moduleId":"1"},
+            success: function(data) {
+                data = data.returnObject;
+                $("#example tr:gt(0)").remove();
+                if(data!=""){
+                    $.each(data,function(index,news){
+                        $("#example").append("<tr bgcolor='white' align='center'><td>"+news.name+"</td><td align='center'>"+news.mobile+"</td><td align='center''>"+news.address+"</td><td align='center'>"+format(news.createTime, 'yyyy-MM-dd HH:mm:ss')+"</td>><td align='center'><img src='"+news.bizLicensePath+"' style='height:40px;width: 40px'><img></td><td align='center'><img src='"+news.idCardFront+"' style='height:40px;width: 40px'></td></img></td><td align='center'><img src='"+news.idCardBack+"' style='height:40px;width: 40px'></td></img><td align='center'><img src='"+news.idCardHand+"' style='height:40px;width: 40px'></td></img><td align='center'>"+news.statusShow+"</td><td align='center'>"+news.typeShow+"</td><td align='center'><input type='button' value='通过审核' onclick=pass('"+news.uuid+"','"+news.name+"') >&nbsp;&nbsp;&nbsp;&nbsp;<input type='button' value='驳回审核' onclick=reject('"+news.uuid+"','"+news.name+"')>&nbsp;&nbsp;&nbsp;&nbsp;<input type='button' value='设为普通商家' onclick=normal('"+news.uuid+"','"+news.name+"')>&nbsp;&nbsp;&nbsp;&nbsp;<input type='button' value='设为旗舰店' onclick=vip('"+news.uuid+"','"+news.name+"') ></td></tr>");  //将返回的数据追加到表格
+                    });
+                }
+            }
+        });
+
+    }
+
+    function pass(uuid,nickName){
+        console.info(nickName);
+        layer.confirm('确实要将['+nickName+"]通过商家审核么", {
+            btn: ['是','否'] //按钮
+        }, function(){
+            jQuery.ajax({
+                type: "POST",
+                url: baseUrl+"/Shop/Shop/Status",
+                contentType:'application/json;charset=UTF-8',
+                data:JSON.stringify({"uuid":uuid,"status":2}),
+                dataType:"json",
+                success:function (data, status, jqXHR) {
+                    window.location.href= 'shopList.html';
+                },
+                error: ""
+            });
+        }, function(){
+            window.location.href= 'shopList.html';
+        });
+    }
+
+    function reject(uuid,nickName){
+        layer.confirm('确实要驳回['+nickName+"]的商家审核么", {
+            btn: ['是','否'] //按钮
+        }, function(){
+            jQuery.ajax({
+                type: "POST",
+                url: baseUrl+"/Shop/Shop/Status",
+                contentType:'application/json;charset=UTF-8',
+                data:JSON.stringify({"uuid":uuid,"status":3}),
+                dataType:"json",
+                success:function (data, status, jqXHR) {
+                    window.location.href= 'shopList.html';
+                },
+                error: ""
+            });
+        }, function(){
+            window.location.href= 'shopList.html';
+        });
+    }
+
+    function normal(uuid,nickName){
+        console.info(nickName);
+        layer.confirm('确实要将['+nickName+"]设为普通商家么", {
+            btn: ['是','否'] //按钮
+        }, function(){
+            jQuery.ajax({
+                type: "POST",
+                url: baseUrl+"/Shop/Shop/Type",
+                contentType:'application/json;charset=UTF-8',
+                data:JSON.stringify({"uuid":uuid,"type":1}),
+                dataType:"json",
+                success:function (data, status, jqXHR) {
+                    window.location.href= 'shopList.html';
+                },
+                error: ""
+            });
+        }, function(){
+            window.location.href= 'shopList.html';
+        });
+    }
+
+    function vip(uuid,nickName){
+        console.info(nickName);
+        layer.confirm('确实要将['+nickName+"]设为旗舰店么", {
+            btn: ['是','否'] //按钮
+        }, function(){
+            jQuery.ajax({
+                type: "POST",
+                url: baseUrl+"/Shop/Shop/Type",
+                contentType:'application/json;charset=UTF-8',
+                data:JSON.stringify({"uuid":uuid,"type":2}),
+                dataType:"json",
+                success:function (data, status, jqXHR) {
+                    window.location.href= 'shopList.html';
+                },
+                error: ""
+            });
+        }, function(){
+            window.location.href= 'shopList.html';
+        });
+    }
+</script>
+</html>

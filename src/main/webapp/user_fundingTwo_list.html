@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script language="JavaScript" src="js/jquery-1.11.3.min.js"></script>
+<script language="JavaScript" src="js/jquery.dataTables.min.js"></script>
+<script language="JavaScript" src="js/layer/layer.js"></script>
+<script language="JavaScript" src="js/config.js"></script>
+
+<link href="css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+<link href="js/layer/skin/layer.css" rel="stylesheet" type="text/css" />
+<span onclick="javascript:history.back(-1);" style="cursor:pointer;"><img src="images/pre.gif"><img src="images/pre.gif"><img src="images/pre.gif"></span>
+<div align="right"><span style="font-weight:bold;font-size: 0.75em" >今天新注册人数为:</span><button id="userCount" onclick="goToUserDate()" style="font-weight:bold;color: #307fb1"></button></div>
+</p>
+</p>
+<table id="example" class="display" cellspacing="0" width="100%" class="table table-bordered table-striped table-hover" style="font-size: 0.75em">
+    <thead>
+    <tr>
+        <th align="left">分销商姓名</th>
+        <th align="left">活动名称</th>
+        <th align="left">分销商等级</th>
+        <th align="left">总共分成金额</th>
+        <th align="left">总共成功募集人数</th>
+        <th align="left">分成比率</th>
+        <th align="left">分成方式</th>
+        <th align="left">分成单笔金额</th>
+        <th align="left">操作</th>
+    </tr>
+    </thead>
+</table>
+</body>
+<script>
+    $(document).ready(function() {
+        $('#example').dataTable( {
+            "oLanguage" : {
+                "sLengthMenu": "每页显示 _MENU_ 条记录",
+                "sZeroRecords": "抱歉， 没有找到",
+                "sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据",
+                "sInfoEmpty": "没有数据",
+                "sInfoFiltered": "(从 _MAX_ 条数据中检索)",
+                "sZeroRecords": "没有检索到数据",
+                "sSearch": "任意搜索条件:",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "前一页",
+                    "sNext": "后一页",
+                    "sLast": "尾页"
+                }
+            },
+            "ajax": baseUrl+"/Activity/Funding/Level/Two"
+        } )
+    } );
+
+    function add(uuid,nickName){
+        layer.open({
+            type: 2,
+            skin: 'layui-layer-rim', //加上边框
+            area: ['420px', '240px'], //宽高
+            content: 'search_user.html?uuid='+uuid+",nickName="+encodeURI(nickName)
+
+        });
+    }
+</script>
+</html>

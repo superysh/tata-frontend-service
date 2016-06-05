@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.GoodMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.Good" >
+    <id column="uuid" property="uuid"  />
+    <result column="name" property="name"  />
+    <result column="price" property="price"  />
+    <result column="capacity" property="capacity"  />
+    <result column="pics" property="pics"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    uuid, name,price,capacity,pics
+  </sql>
+
+
+  <insert id="insert" parameterType="rml.model.Good" >
+    insert into tb_good (uuid, name,price,
+    capacity,pics)
+    values (#{uuid}, #{name}, #{price},
+    #{capacity},#{pics})
+  </insert>
+
+  <select id="getActivityGoods" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_good
+    where uuid in ("1c409ef7-b11c-49ed-a771-adf06ec3bb57","eb72f8ef-869e-4ea7-af89-c531abe25b26","55e88f90-1d7a-431e-99b0-4189c2c9fdb4","bde21109-ca2a-4db0-afeb-073b3ffd635a","a7063bde-75c9-4148-ba39-310f6b788a30","49972b45-61c8-472b-86a4-656b13c93d8a","6b16c98d-e032-489d-bee9-7f97f04526f9","c2033ca4-1235-4d1d-9f42-d7a59284d01d","ba981ad3-6dc8-49a7-933c-a3b2f7a95c91","0fe27bc4-12ed-4009-b539-f94fbbb11a20")
+    order by field("1c409ef7-b11c-49ed-a771-adf06ec3bb57","eb72f8ef-869e-4ea7-af89-c531abe25b26","55e88f90-1d7a-431e-99b0-4189c2c9fdb4","bde21109-ca2a-4db0-afeb-073b3ffd635a","a7063bde-75c9-4148-ba39-310f6b788a30","49972b45-61c8-472b-86a4-656b13c93d8a","6b16c98d-e032-489d-bee9-7f97f04526f9","c2033ca4-1235-4d1d-9f42-d7a59284d01d","ba981ad3-6dc8-49a7-933c-a3b2f7a95c91","0fe27bc4-12ed-4009-b539-f94fbbb11a20")
+  </select>
+
+  <select id="getGoodByUUID" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_good
+    where uuid=#{uuid}
+  </select>
+
+
+
+</mapper>

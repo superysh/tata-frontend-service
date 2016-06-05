@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.ActivityMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.Activity" >
+    <id column="uuid" property="uuid"  />
+    <result column="good_ids" property="goodIds"  />
+    <result column="goods_total_money" property="goodsTotalMoney"  />
+    <result column="i_desc" property="desc"  />
+    <result column="name_front" property="name"  />
+    <result column="limited_time" property="limitedTime"  />
+    <result column="start_time" property="startTime"  />
+    <result column="end_time" property="endTime"  />
+    <result column="total_joined_people" property="totalJoinedPeople"  />
+    <result column="total_income_money" property="totalIncomeMoney"  />
+    <result column="name" property="name"  />
+    <result column="status" property="status"  />
+    <result column="level_one_fx_rate" property="levelOneFxRate"  />
+    <result column="level_two_fx_rate" property="levelTwoFxRate"  />
+    <result column="level_three_fx_rate" property="levelThreeFxRate"  />
+    <result column="level_one_fx_money" property="levelOneFxMoney"  />
+    <result column="level_two_fx_money" property="levelTwoFxMoney"  />
+    <result column="level_three_fx_money" property="levelThreeFxMoney"  />
+    <result column="level_two_money" property="levelTwoMoney"  />
+    <result column="level_three_money" property="levelThreeMoney"  />
+    <result column="level_two_three_money" property="levelTwoThreeMoney"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    uuid,good_ids,name,goods_total_money,i_desc,name_front,limited_time,start_time,end_time,total_joined_people,total_income_money,name,status,level_one_fx_rate,level_two_fx_rate,level_three_fx_rate,level_one_fx_money,level_two_fx_money,level_three_fx_money,level_two_money,level_three_money
+    ,level_two_three_money
+  </sql>
+
+
+
+  <select id="getActivityByName" resultMap="BaseResultMap" parameterType="rml.model.Activity" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_activity
+    where name = #{name} and status = 1
+    and #{endTime} &lt; end_time
+  </select>
+
+
+  <select id="getActivityByUUID" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_activity
+    where uuid = #{uuid} and status = 1
+    and #{endTime} &lt; end_time
+  </select>
+
+  <select id="getActivities" resultMap="BaseResultMap"  >
+    select
+    <include refid="Base_Column_List" />
+    from tb_activity
+  </select>
+</mapper>

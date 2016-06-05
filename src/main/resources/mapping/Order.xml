@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.OrderMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.Order" >
+    <id column="uuid" property="uuid"  />
+    <result column="user_id" property="userId"  />
+    <result column="cargo_ids" property="cargoIds"  />
+    <result column="type" property="type"  />
+    <result column="create_time" property="createTime"  />
+    <result column="total_money" property="totalMoney"  />
+    <result column="acture_money" property="actureMoney"  />
+    <result column="activity_id" property="activityId"  />
+    <result column="i_desc" property="lDesc"  />
+    <result column="limited_time" property="limitedTime"  />
+    <result column="status" property="status"  />
+    <result column="pid" property="pid"  />
+    <result column="comment" property="comment"  />
+    <result column="delivery_fee" property="deliveryFee"  />
+    <result column="user_address_id" property="userAddressId"  />
+    <result column="funding_comment_id" property="fundingCommmentId"  />
+    <result column="shop_id" property="shopId"  />
+    <result column="sub_status" property="subStatus"  />
+    <result column="pay_type" property="payType"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    uuid,user_id,cargo_ids,type,create_time,total_money,acture_money,activity_id,i_desc,limited_time,status,funding_comment_id,pid,user_address_id,delivery_fee,comment,shop_id,sub_status,pay_type
+  </sql>
+
+
+  <select id="getOrder" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_order
+    where uuid=#{uuid}
+  </select>
+
+  <insert id="insert" parameterType="rml.model.Order" >
+    insert into tb_order (uuid,user_id,cargo_ids,type,create_time,total_money,acture_money,i_desc,status,user_address_id,delivery_fee)
+    values (#{uuid},#{userId},#{cargoIds},#{type},#{createTime},#{totalMoney},#{actureMoney},#{lDesc},0,#{userAddressId},#{deliveryFee}
+      )
+  </insert>
+
+  <insert id="insertUserPay" parameterType="rml.model.Order" >
+    insert into tb_order (uuid,user_id,create_time,pid,comment,funding_comment_id)
+    values (#{uuid},#{userId},#{createTime},#{pid},#{comment},#{fundingCommmentId}
+    )
+  </insert>
+
+  <insert id="updateOrderReal" parameterType="java.lang.String" >
+    UPDATE tb_order set status = 4 where uuid =  #{uuid}
+  </insert>
+
+  <insert id="updateAddress" parameterType="java.lang.String" >
+    UPDATE tb_order set delivery_fee=#{deliveryFee},delivery_address = #{deliveryAddress},comment=#{comment},pay_type=#{payType},status=#{status},type=1 where uuid =  #{uuid}
+  </insert>
+
+
+  <insert id="updateOrderMoney" parameterType="rml.model.Order" >
+    UPDATE tb_order set acture_money = #{actureMoney},type = #{type},status = #{status},series_no=#{seriesNo},paid_time=#{updateTime},user_address_id=#{userAddressId},paid_time=#{paidTime} where uuid =  #{uuid}
+  </insert>
+
+
+
+  <insert id="updateOrderMoneyNew" parameterType="rml.model.Order" >
+    UPDATE tb_order set acture_money = #{actureMoney},total_money = #{totalMoney},type = #{type},status = #{status},series_no=#{seriesNo},paid_time=#{updateTime},user_address_id=#{userAddressId},paid_time=#{paidTime} where uuid =  #{uuid}
+  </insert>
+
+  <select id="getUserOrderStatus" resultMap="BaseResultMap" parameterType="rml.model.Order" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_order
+    where user_id=#{userId}
+    and status =#{status}
+    and type=1
+  </select>
+
+
+  <select id="getUserOrder" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_order
+    where user_id=#{userId}
+    and type = 2
+    and status =4
+    and pid is null
+  </select>
+
+
+  <select id="getOrderById" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_order
+    where uuid=#{uuid}
+    and type = 2
+    and status =4
+    and pid is null
+  </select>
+
+    <select id="getOrderByIdTemp1" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from tb_order
+        where uuid=#{uuid}
+    </select>
+
+  <select id="updateOrderFinish"  parameterType="java.lang.String" >
+      UPDATE tb_order set status = 6 where uuid =  #{uuid}
+  </select>
+
+  <select id="updateOrderStatus"  parameterType="rml.model.Order" >
+    UPDATE tb_order set status = #{status} where uuid =  #{uuid}
+  </select>
+
+
+
+  <select id="delete"  parameterType="java.lang.String" >
+    delete from tb_order where uuid=#{uuid}
+  </select>
+
+  <insert id="insertNormalUser" parameterType="rml.model.Order" >
+    insert into tb_order (uuid,user_id,create_time,i_desc,acture_money,type,status,shop_id,pid)
+    values (#{uuid},#{userId},#{createTime},#{lDesc},#{actureMoney},#{type},2,#{shopId},#{pid}
+    )
+  </insert>
+
+
+
+  <insert id="insertNormalUserNew" parameterType="rml.model.Order" >
+    insert into tb_order (uuid,user_id,create_time,i_desc,acture_money,type,status,shop_id,pid,total_money)
+    values (#{uuid},#{userId},#{createTime},#{lDesc},#{actureMoney},#{type},#{status},#{shopId},#{pid},#{totalMoney}
+    )
+  </insert>
+
+  <select id="getOrders" resultMap="BaseResultMap" parameterType="rml.model.Order">
+    select
+    <include refid="Base_Column_List" />
+    from tb_order
+    where type=1
+    order by create_time desc
+    limit #{startSize},#{pageSize}
+  </select>
+
+
+  <select id="getOrdersTotal" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tb_order
+    where type=1
+  </select>
+  <select id="getOrdersPid" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List" />
+    from tb_order
+    where pid=#{pid}
+  </select>
+  <select id="getBizOrderDaily" resultMap="BaseResultMap"  parameterType="rml.model.Order">
+    select
+    <include refid="Base_Column_List" />
+    from tb_order
+    where type=8
+    and status = 3
+    and (create_time &gt; #{startDate} and create_time &lt; #{endDate})
+    and shop_id = #{shopId}
+    order by create_time
+  </select>
+
+
+  <select id="getShopReport" resultType="java.lang.Integer"  parameterType="rml.model.Order">
+      select
+    sum(total_money) as total_money
+    from tb_order
+    where type=8
+    and status = 3
+    and (create_time &gt; #{startDate} and create_time &lt; #{endDate})
+    and shop_id = #{shopId}
+  </select>
+
+
+  <insert id="updateSubStatus" parameterType="rml.model.Order" >
+    UPDATE tb_order set sub_status = #{subStatus} where uuid =  #{uuid}
+  </insert>
+
+  <select id="getOnlineMoneyOrders" resultMap="BaseResultMap"  parameterType="rml.model.Order">
+    select
+    <include refid="Base_Column_List" />
+    from tb_order
+    where type=#{type}
+    and (create_time &gt; #{startDate} and create_time &lt; #{endDate})
+    order by create_time
+    limit #{startSize},#{pageSize}
+  </select>
+
+
+  <select id="getOnlineMoneyTotal" resultMap="BaseResultMap"  parameterType="rml.model.Order">
+    select
+        sum(acture_money) as acture_money
+    from tb_order
+    where type=#{type}
+    and (create_time &gt; #{startDate} and create_time &lt; #{endDate})
+    order by create_time
+  </select>
+
+
+  <select id="getOnlineMoneyOrdersTotal" resultMap="BaseResultMap"  parameterType="rml.model.Order">
+    select
+    <include refid="Base_Column_List" />
+    from tb_order
+    where type=#{type}
+    and (create_time &gt; #{startDate} and create_time &lt; #{endDate})
+    order by create_time
+  </select>
+
+
+  <select id="searchMobile" resultMap="BaseResultMap"  parameterType="rml.model.Order">
+    select
+    a.uuid,a.user_id,a.cargo_ids,a.type,a.create_time,a.total_money,a.acture_money,a.activity_id,a.i_desc,a.limited_time,a.status,a.funding_comment_id,a.pid,a.user_address_id,a.delivery_fee,a.comment,a.shop_id,a.sub_status,a.pay_type,b.mobile
+    from tb_order a,tb_user b
+    where a.type=#{type}
+    and a.user_id = b.uuid
+    and b.mobile = #{mobile}
+    order by create_time
+  </select>
+
+  <select id="searchMobileDate" resultMap="BaseResultMap"  parameterType="rml.model.Order">
+    select
+    a.uuid,a.user_id,a.cargo_ids,a.type,a.create_time,a.total_money,a.acture_money,a.activity_id,a.i_desc,a.limited_time,a.status,a.funding_comment_id,a.pid,a.user_address_id,a.delivery_fee,a.comment,a.shop_id,a.sub_status,a.pay_type,b.mobile
+    from tb_order a,tb_user b
+    where a.type=#{type}
+    and a.user_id = b.uuid
+    and b.mobile = #{mobile}
+    and (a.create_time &gt; #{startDate} and a.create_time &lt; #{endDate})
+    order by a.create_time
+  </select>
+</mapper>

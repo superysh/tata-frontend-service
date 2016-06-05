@@ -1,0 +1,22 @@
+<html lang="en">
+<head>
+    <title>File Upload</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<body>
+<form method="POST" action="http://139.196.34.76:8080/upload" enctype="multipart/form-data" >
+<!--<form method="POST" action="http://localhost:8080/upload" enctype="multipart/form-data" >-->
+    File:
+    <input type="file" name="file" id="file" /> <br/>
+    houseToken:
+    <input type="text" value="c00f6489fd9f9d83292fffd4c6a0369c" name="houseToken"/>
+    userToken:
+    <input type="text" value="60b46d63-88fb-413a-b02d-1feb58e9c5b0" name="userToken"/>
+    type:
+    <input type="text" value="3" name="type"/>
+
+    </br>
+    <input type="submit" value="Upload" name="upload" id="upload" />
+</form>
+</body>
+</html>

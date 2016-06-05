@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script language="JavaScript" src="js/jquery-1.11.3.min.js"></script>
+<script language="JavaScript" src="js/jquery.dataTables.min.js"></script>
+<script language="JavaScript" src="js/layer/layer.js"></script>
+<script language="JavaScript" src="js/config.js"></script>
+
+
+<link href="css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+<link href="js/layer/skin/layer.css" rel="stylesheet" type="text/css" />
+<span onclick="javascript:history.back(-1);" style="cursor:pointer;"><img src="images/pre.gif"><img src="images/pre.gif"><img src="images/pre.gif"></span>
+</p>
+</p>
+<table id="example" class="display" cellspacing="0" width="100%" class="table table-bordered table-striped table-hover" style="font-size: 0.75em">
+    <thead>
+    <tr>
+        <th align="left">姓名</th>
+        <th align="left">手机号</th>
+        <th align="left">注册时间</th>
+        <th align="left">会员级别</th>
+        <th align="left">会员类型</th>
+        <th align="left">会员注册类别</th>
+        <th align="left">操作</th>
+    </tr>
+    </thead>
+</table>
+</body>
+<script>
+
+    function GetRequest(strName)
+    {
+        var strHref = window.location.href; //获取Url字串
+        var intPos = strHref.indexOf("?");  // 参数开始位置
+        var strRight = strHref.substr(intPos + 1);
+        var arrTmp = strRight.split(","); //参数分割符
+        for(var i = 0; i < arrTmp.length; i++)
+        {
+            var arrTemp = arrTmp[i].split("=");
+            if(arrTemp[0].toUpperCase() == strName.toUpperCase()) return arrTemp[1];
+        }
+        return "";
+    }
+
+    var pid = GetRequest("pid");
+
+
+    $(document).ready(function() {
+            $('#example').dataTable( {
+                "oLanguage" : {
+                    "sLengthMenu": "每页显示 _MENU_ 条记录",
+                    "sZeroRecords": "抱歉， 没有找到",
+                    "sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据",
+                    "sInfoEmpty": "没有数据",
+                    "sInfoFiltered": "(从 _MAX_ 条数据中检索)",
+                    "sZeroRecords": "没有检索到数据",
+                    "sSearch": "任意搜索条件:",
+                    "oPaginate": {
+                        "sFirst": "首页",
+                        "sPrevious": "前一页",
+                        "sNext": "后一页",
+                        "sLast": "尾页"
+                    }
+                },
+                "ajax": baseUrl+"/User/Users/Detail?pid="+pid
+            } )
+        } );
+
+
+</script>
+</html>

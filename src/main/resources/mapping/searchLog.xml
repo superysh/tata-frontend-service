@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.SearchLogMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.SearchLog" >
+    <id column="uuid" property="uuid"  />
+    <result column="search_name" property="searchName"  />
+    <result column="user_id" property="userId"  />
+    <result column="create_time" property="createTime"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+      uuid,search_name,user_id,create_time
+  </sql>
+
+
+  <select id="getLogs" resultMap="BaseResultMap" parameterType="rml.model.SearchLog" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_search_log
+    where user_id = #{userId}
+    limit 0,10
+  </select>
+
+  <insert id="insertLog" parameterType="rml.model.SearchLog" >
+    insert into tb_search_log(uuid,search_name,user_id,create_time)
+    values(#{uuid},#{searchName},#{userId},#{createTime})
+  </insert>
+
+</mapper>

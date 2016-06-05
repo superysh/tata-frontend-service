@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.VerifyCodeMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.VerifyCode" >
+    <result column="uuid" property="uuid"  />
+    <result column="create_time" property="createTime"  />
+    <result column="session_id" property="sessionId"  />
+    <result column="verify_code" property="verifyCode"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    uuid, create_time,session_id,verify_code
+  </sql>
+
+
+  <insert id="insert" parameterType="rml.model.VerifyCode" >
+    insert into tb_verify_code(uuid,create_time,session_id)
+    values(#{uuid},#{createTime},#{sessionId})
+  </insert>
+
+
+  <insert id="updateVerifyCode" parameterType="rml.model.VerifyCode" >
+    update tb_verify_code set verify_code = #{verifyCode} where uuid=#{uuid}
+  </insert>
+
+  <insert id="deleteVerifyCode" parameterType="rml.model.VerifyCode" >
+    delete from tb_verify_code where uuid = #{uuid}
+  </insert>
+
+  <select id="checkSessionId" resultMap="BaseResultMap" parameterType="rml.model.VerifyCode" >
+    SELECT
+    <include refid="Base_Column_List" />
+    from tb_verify_code
+    where session_id=#{sessionId}
+  </select>
+
+
+  <select id="checkVerifyCode" resultMap="BaseResultMap" parameterType="rml.model.VerifyCode" >
+    SELECT
+    <include refid="Base_Column_List" />
+    from tb_verify_code
+    where session_id=#{sessionId}
+    and verify_code = #{verifyCode}
+  </select>
+</mapper>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.CargoMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.Cargo" >
+    <id column="user_id" property="userId"  />
+    <result column="property_id" property="propertyId"  />
+    <result column="type" property="type"  />
+    <result column="create_time" property="createTime"  />
+    <result column="total_money" property="totalMoney"  />
+    <result column="acture_money" property="actureMoney"  />
+    <result column="good_count" property="goodCount"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+  uuid,user_id,property_id,create_time,total_money,acture_money,good_count
+  </sql>
+
+
+
+  <insert id="insert" parameterType="rml.model.Cargo" >
+    insert into tb_cargo (uuid,user_id,good_id,type,create_time,total_money,acture_money,good_count,activity_id,status)
+    values (#{uuid},#{userId},#{goodId},#{type},#{createTime},#{totalMoney},#{actureMoney},#{goodCount},#{activityId},1
+      )
+  </insert>
+
+
+    <insert id="insertGood" parameterType="rml.model.Cargo" >
+        insert into tb_cargo (uuid,user_id,property_id,create_time,total_money,acture_money,good_count,status)
+        values (#{uuid},#{userId},#{propertyId},#{createTime},#{totalMoney},#{actureMoney},#{goodCount},1
+        )
+    </insert>
+
+    <select id="getGood" resultMap="BaseResultMap" parameterType="rml.model.Cargo" >
+        select
+        <include refid="Base_Column_List" />
+        from tb_cargo
+        where property_id = #{propertyId}
+        and user_id=#{userId}
+        and status = 1
+    </select>
+
+    <select id="getUserGood" resultMap="BaseResultMap" parameterType="rml.model.Cargo" >
+        select
+        <include refid="Base_Column_List" />
+        from tb_cargo
+        where user_id=#{userId}
+        and status = 1
+    </select>
+
+
+    <select id="getCargo" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from tb_cargo
+        where uuid=#{uuid}
+    </select>
+
+    <insert id="updateCount" parameterType="rml.model.Cargo" >
+        update tb_cargo set good_count = #{goodCount},total_money=#{totalMoney},acture_money=#{actureMoney} where uuid=#{uuid}
+    </insert>
+
+
+    <insert id="updateCountMinus" parameterType="rml.model.Cargo" >
+        update tb_cargo set good_count = good_count-#{goodCount},total_money=total_money-#{totalMoney},acture_money=acture_money-#{actureMoney} where property_id=#{propertyId} and user_id = #{userId}
+    </insert>
+
+    <insert id="delete" parameterType="java.lang.String" >
+      update tb_cargo set status = 0 where property_id=#{propertyId}
+    </insert>
+
+
+    <insert id="deleteCargo" parameterType="java.lang.String" >
+        update tb_cargo set status = 0 where uuid=#{uuid}
+    </insert>
+</mapper>

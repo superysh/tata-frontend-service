@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.TerminalMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.Terminal" >
+    <id column="uuid" property="uuid"  />
+    <result column="version" property="version"  />
+    <result column="force_update_increment" property="forceUpdateIncrement"  />
+    <result column="ldesc" property="ldesc"  />
+    <result column="type" property="type"  />
+    <result column="url" property="url"  />
+    <result column="increment" property="increment"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+uuid,version,force_update_increment,ldesc,type,url,increment
+  </sql>
+
+  <select id="getVersion" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_terminal_update
+    where version = #{version}
+  </select>
+
+
+  <select id="getMaxVersion" resultMap="BaseResultMap">
+select <include refid="Base_Column_List" /> from tb_terminal_update where increment = (select max(increment) from tb_terminal_update)
+  </select>
+
+
+
+
+
+
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.ShopProductMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.ShopProduct" >
+    <id column="uuid" property="uuid"  />
+    <result column="shop_id" property="shopId"  />
+    <result column="ldesc" property="desc"  />
+    <result column="icon" property="icon"  />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+   uuid,shop_id,name,ldesc,icon
+  </sql>
+
+
+
+  <insert id="insert" parameterType="rml.model.ShopProduct" >
+    insert into tb_shop_product (uuid,shop_id,name,ldesc,icon,create_time,record_status)
+    values (#{uuid},#{shopId},#{name},#{desc},#{icon},#{createTime},1
+    )
+  </insert>
+
+
+  <select id="getShopProducts" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_shop_product
+    where shop_id = #{shopId}
+    and record_status = 1
+  </select>
+
+  <insert id="updateProduct" parameterType="rml.model.ShopProduct" >
+    UPDATE tb_shop_product set name = #{name},ldesc=#{desc},icon=#{icon} where uuid =  #{uuid}
+  </insert>
+
+
+  <insert id="deleteProduct" parameterType="java.lang.String" >
+    UPDATE tb_shop_product set record_status = 2 where uuid =  #{uuid}
+  </insert>
+
+  <select id="getFunding" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from tb_crowdfunding
+        where order_id = #{orderId}
+        and status = 2
+  </select>
+
+
+</mapper>

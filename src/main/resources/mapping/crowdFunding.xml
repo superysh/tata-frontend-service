@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.CrowdFundingMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.CrowdFunding" >
+    <id column="uuid" property="uuid"  />
+    <result column="total_money" property="totalMoney"  />
+    <result column="start_date" property="startDate"  />
+    <result column="rasied_money" property="rasiedMoney"  />
+    <result column="total_rasied_people" property="totalRasiedPeople"  />
+    <result column="name" property="name"  />
+    <result column="user_id" property="userId"  />
+    <result column="money_single" property="moneySingle"  />
+    <result column="level" property="level"  />
+    <result column="type" property="type"  />
+    <result column="activity_id" property="activityId"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+      uuid,start_date,total_money,rasied_money,total_rasied_people,name,user_id,money_rate,money_single,level,type,activity_id
+  </sql>
+
+
+  <insert id="insert" parameterType="rml.model.CrowdFunding" >
+    insert into tb_crowdfunding(uuid,start_date,total_money,rasied_money,total_rasied_people,name,user_id,money_rate,money_single,level,type,activity_id)
+    values (#{uuid},#{startDate},#{totalMoney},#{rasiedMoney},#{totalRasiedPeople},#{name},#{userId},#{moneyRate},#{moneySingle},#{level},#{type},#{activityId}
+    )
+  </insert>
+
+  <select id="getLevelOne" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_crowdfunding
+    where level=1
+  </select>
+
+  <select id="getLevelTwo" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_crowdfunding
+    where level=2
+  </select>
+
+    <select id="getLevelThree" resultMap="BaseResultMap" >
+        select
+        <include refid="Base_Column_List" />
+        from tb_crowdfunding
+        where level=3
+    </select>
+
+  <select id="getUser" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_crowdfunding
+    where user_id=#{userId}
+  </select>
+</mapper>

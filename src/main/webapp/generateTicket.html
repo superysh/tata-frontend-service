@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<script language="JavaScript" src="js/jquery.min-2.js"></script>
+<body>
+<table style="font-size: 0.8em">
+    <tr>
+        <td>优惠券价格:<input type="text" id="ticketValue"></td>
+        <td>张数:<input type="text" id="num"></td>
+        <td>店铺名称:<input type="text" id="shopName"></td>
+        <td><input type="button" id="excute" onclick=init() value="批量生成优惠券"></td>
+    </tr>
+</table>
+</body>
+<script>
+    function init(){
+        var ticketValue = $("#ticketValue").val();
+        if(ticketValue==""||isNaN(ticketValue)){
+            alert("请输入优惠券价格");
+            return;
+        }
+        var num = $("#num").val();
+        if(num==""||isNaN(num)){
+            alert("请输入优惠券张数");
+            return;
+        }
+        var shopName = $("#shopName").val();
+        if(shopName==""){
+            alert("请输入店铺名称");
+            return;
+        }
+        window.location.href="batchList.html?shopName="+encodeURI(shopName)+"&num="+num+"&ticketValue="+ticketValue;
+    }
+</script>
+</html>

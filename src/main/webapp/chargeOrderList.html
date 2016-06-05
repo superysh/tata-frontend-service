@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<p lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+    </head>
+    <script language="JavaScript" src="js/jquery-1.11.3.min.js"></script>
+    <script language="JavaScript" src="js/jquery.pagination.js"></script>
+    <script language="JavaScript" src="js/layer/layer.js"></script>
+    <script language="JavaScript" src="js/config-all.js"></script>
+    <script language="JavaScript" src="js/tableExport.js"></script>
+    <script language="JavaScript" src="js/jquery.base64.js"></script>
+
+    <link href="css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <link href="js/layer/skin/layer.css" rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="css/pagination.css" />
+    <body style="font-size: 0.8em">
+<table>
+    <tr>
+        <td>导出excel:<input type="button" id="exportButton" value="导出excel" onclick=doExport()></td>
+    </tr>
+    <tr>
+        <td> 总金额：<input type="text" id="total" disabled></td>
+    </tr>
+    <tr>
+        <td> 总充值笔数：<input type="text" id="count" disabled></td>
+    </tr>
+</table>
+</p>
+</p>
+<table id="example" class="display" cellspacing="0" width="100%" class="table table-bordered table-striped table-hover" style="font-size: 0.75em;border-color:aliceblue;color:#7b7b7b" border="1">
+    <thead>
+    <tr>
+        <th align="center">订单号</th>
+        <th align="center">用户昵称</th>
+        <th align="center">用户手机号码</th>
+        <th align="center" >金额</th>
+        <th align="center">创建时间</th>
+    </thead>
+
+</table>
+
+
+
+<div id="Pagination" style="float: right"></div>
+</body>
+<script language="javascript" type="text/javascript">
+    var startDate = GetRequest("startDate");
+    var endDate = GetRequest("endDate");
+    var type = GetRequest("type");
+    var mobile = GetRequest("mobile");
+    if(type==11){
+        $("#title").val("充值金额");
+    }
+    function GetRequest(strName)
+    {
+        var strHref = window.location.href; //获取Url字串
+        var intPos = strHref.indexOf("?");  // 参数开始位置
+        var strRight = strHref.substr(intPos + 1);
+        var arrTmp = strRight.split("&"); //参数分割符
+        for(var i = 0; i < arrTmp.length; i++)
+        {
+            var arrTemp = arrTmp[i].split("=");
+            if(arrTemp[0].toUpperCase() == strName.toUpperCase()) return arrTemp[1];
+        }
+        return "";
+    }
+    function view(id){
+        window.open("userDetail.html?uuid="+id);
+    }
+    function clear(id){
+        $("#"+id+"").val("");
+    }
+
+    function getTotal(){
+        var pageCount = 0;
+        jQuery.ajax({
+            type: "POST",
+            async: false,
+            url: baseUrl + "/Order/Orders/Backend/OnlineMoney/Total",
+            contentType: 'application/json;charset=UTF-8',
+            dataType: "json",
+            data: JSON.stringify({"mobile":mobile,"pageNo": pageIndex+1,"pageSize":pageSize,"startDate":startDate,"endDate":endDate,"type":type}),
+            success: function (data, status, jqXHR) {
+                pageCount= data;
+            },
+            error: ''
+        });
+        return pageCount;
+    }
+    if(mobile=="") {
+        var count = getTotal();
+        $("#count").val(count);
+    }
+    var pageIndex =0;     //页索引
+    var pageSize =50;    //每页显示的条数
+    $("#Pagination").pagination(getTotal(), {
+        callback: PageCallback,
+        prev_text: '上一页',
+        next_text: '下一页',
+        items_per_page: pageSize,
+        num_display_entries: 2,
+        current_page: pageIndex,
+        num_edge_entries: 1
+    });
+    function PageCallback(index, jq) {
+        Init(index);
+    }
+    Init(0);
+    var format = function(time, format){
+        var t = new Date(time);
+        var tf = function(i){return (i < 10 ? '0' : '') + i};
+        return format.replace(/yyyy|MM|dd|HH|mm|ss/g, function(a){
+            switch(a){
+                case 'yyyy':
+                    return tf(t.getFullYear());
+                    break;
+                case 'MM':
+                    return tf(t.getMonth() + 1);
+                    break;
+                case 'mm':
+                    return tf(t.getMinutes());
+                    break;
+                case 'dd':
+                    return tf(t.getDate());
+                    break;
+                case 'HH':
+                    return tf(t.getHours());
+                    break;
+                case 'ss':
+                    return tf(t.getSeconds());
+                    break;
+            }
+        })
+    }
+    function Init(pageIndex) {
+
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: baseUrl+'/Order/Orders/Backend/OnlineMoney',
+            contentType:'application/json;charset=UTF-8',
+            data: JSON.stringify({"pageNo": pageIndex+1,"pageSize":pageSize,"startDate":startDate,"endDate":endDate,"type":type,"mobile":mobile}),
+            success: function(data) {
+                $("#example tr:gt(0)").remove();
+                if(type==12) {
+                    $("#total").val("一共扣除"+data.returnValue / 100 + "元线下币");
+                }else{
+                    $("#total").val("一共充值"+data.returnValue / 100 + "元线上币");
+                }
+                data = data.returnObject;
+                if(mobile!=null&&mobile!=""){
+                    $("#count").val(data.length);
+                }
+                if(data!=""){
+                    $.each(data,function(index,news) {
+                        var price = "";
+                        if(type==12){
+                            price ="扣除"+ news.actureMoney/100;
+                        }else{
+                            price = "充值"+news.actureMoney/100;
+                        }
+                        $("#example").append("<tr bgcolor='white' align='center'><td>" + news.uuid + "</td><td align='center'>" + news.nickName + "</td><td align='center'>" + news.mobile + "</td><td align='center''>" + price + "元</td><td align='center'>" + format(news.createTime, 'yyyy-MM-dd HH:mm:ss') + "</td></tr>");  //将返回的数据追加到表
+                    });
+                }
+            }
+        });
+
+    }
+    function query(){
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: baseUrl+'/User/Users/Search',
+            contentType:'application/json;charset=UTF-8',
+            data:  JSON.stringify({"nickName": $("#nickName").val(),"mobile":$("#mobile").val()}),
+            success: function(data) {
+                $("#example tr:gt(0)").remove();
+                if(data!=""){
+                    $.each(data,function(index,news){
+                        $("#example").append("<tr bgcolor='white' align='center'><td>"+news.uuid+"</td><td align='center'>"+news.nickName+"</td><td align='center''>"+news.mobile+"</td><td align='center'>"+format(news.createDate, 'yyyy-MM-dd HH:mm:ss')+"</td><td align='center'>"+news.iconType+"</td><td align='center'>"+news.address+"</td><td align='center'><input type='button' value='查看' onclick=view('"+news.uuid+"') >&nbsp;<input type='button' value='编辑' onclick=view('"+news.uuid+"')/>&nbsp;<input type='button' value='删除' onclick=view('"+news.uuid+"')/><tr></tr>");  //将返回的数据追加到表格
+                    });
+                }
+            }
+        });
+    }
+    function doExport()
+    {
+        $('#example').tableExport({type: 'excel', escape: 'false'});
+    }
+    function uuid() {
+        var s = [];
+        var hexDigits = "0123456789abcdef";
+        for (var i = 0; i < 36; i++) {
+            s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+        }
+        s[14] = "4"; // bits 12-15 of the time_hi_and_version field to 0010
+        s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
+        s[8] = s[13] = s[18] = s[23] = "-";
+
+        var uuid = s.join("");
+        return uuid;
+    }
+</script>
+</html>

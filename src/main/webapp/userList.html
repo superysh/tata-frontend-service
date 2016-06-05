@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script language="JavaScript" src="js/jquery-1.11.3.min.js"></script>
+<script language="JavaScript" src="js/jquery.dataTables.min.js"></script>
+<script language="JavaScript" src="js/layer/layer.js"></script>
+<script language="JavaScript" src="js/config.js"></script>
+
+
+<link href="css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+<link href="js/layer/skin/layer.css" rel="stylesheet" type="text/css" />
+<span onclick="javascript:history.back(-1);" style="cursor:pointer;"><img src="images/pre.gif"><img src="images/pre.gif"><img src="images/pre.gif"></span>
+<div align="right"><span style="font-weight:bold;font-size: 0.75em" >今天新注册人数为:</span><button id="userCount" onclick="goToUserDate()" style="font-weight:bold;color: #307fb1"></button></div>
+</p>
+</p>
+<table id="example" class="display" cellspacing="0" width="100%" class="table table-bordered table-striped table-hover" style="font-size: 0.75em">
+    <thead>
+    <tr>
+        <th align="left">姓名</th>
+        <th align="left">手机号</th>
+        <th align="left">注册时间</th>
+        <th align="left">会员级别</th>
+        <th align="left">会员类型</th>
+        <th align="left">会员注册类别</th>
+        <th align="left">会员注册渠道</th>
+    </tr>
+    </thead>
+</table>
+</body>
+<script>
+        $(document).ready(function() {
+            $('#example').dataTable( {
+                "oLanguage" : {
+                    "sLengthMenu": "每页显示 _MENU_ 条记录",
+                    "sZeroRecords": "抱歉， 没有找到",
+                    "sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据",
+                    "sInfoEmpty": "没有数据",
+                    "sInfoFiltered": "(从 _MAX_ 条数据中检索)",
+                    "sZeroRecords": "没有检索到数据",
+                    "sSearch": "任意搜索条件:",
+                    "oPaginate": {
+                        "sFirst": "首页",
+                        "sPrevious": "前一页",
+                        "sNext": "后一页",
+                        "sLast": "尾页"
+                    }
+                },
+                "ajax": baseUrl+"/User/Users"
+            } )
+           var htmlobj=$.ajax({url:baseUrl+"/User/Users/Date/Count",async:false});
+            $("#userCount").html(htmlobj.responseText);
+        } );
+    function goToUserDate(){
+        window.location.href= 'userListDate.html';
+    }
+
+    function add(uuid,nickName){
+        console.info(nickName);
+        layer.confirm('确实要将['+nickName+"]设定为一级分销商么", {
+            btn: ['是','否'] //按钮
+        }, function(){
+            jQuery.ajax({
+                type: "GET",
+                url: baseUrl+"/User/Funding/Level/One",
+                contentType:'application/json;charset=UTF-8',
+                data:{"uuid":uuid},
+                dataType:"json",
+                success:function (data, status, jqXHR) {
+                    window.location.href= 'userList_jump.html';
+                },
+                error: ""
+            });
+        }, function(){
+            layer.msg('也可以这样', {
+                time: 20000, //20s后自动关闭
+                btn: ['明白了', '知道了']
+            });
+        });
+    }
+//        setInterval("refreshCount()",1000);
+        function refreshCount(){
+            console.info("不断刷新注册人数");
+        var htmlobj=$.ajax({url:baseUrl+"/User/Users/Date/Count",async:false});
+        $("#userCount").html(htmlobj.responseText);
+        }
+</script>
+</html>

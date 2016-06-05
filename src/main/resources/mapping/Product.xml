@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.ProductMapper" >
+  <resultMap id="BaseResultMap" type="rml.model.Product" >
+    <id column="uuid" property="uuid"  />
+    <result column="name" property="name"  />
+    <result column="brand_name" property="brandName"  />
+    <result column="create_time" property="createTime"  />
+    <result column="module_name" property="moduleName"  />
+    <result column="brand_id" property="brandId"  />
+    <result column="is_online" property="isOnline"  />
+    <result column="storage" property="storage"  />
+    <result column="status" property="status"  />
+    <result column="order_by" property="order"  />
+    <result column="ldesc_mobile" property="ldescMobile"  />
+    <result column="ldesc_pc" property="ldescPc"  />
+    <result column="key_words" property="keyWords"  />
+    <result column="record_status" property="recordStatus"  />
+    <result column="product_code" property="productCode"  />
+    <result column="storage_alert" property="storageAlert"  />
+    <result column="integral" property="integral"  />
+    <result column="module_id" property="moduleId"  />
+    <result column="imgs" property="imgs"  />
+    <result column="imgs_main" property="imgsMain"  />
+    <result column="category_id" property="categoryId"  />
+    <result column="is_top" property="isTop"  />
+    <result column="brand_ids" property="brandIds"  />
+    <result column="category_ids" property="categoryIds"  />
+    <result column="detail_imgs" property="detailImgs"  />
+    <result column="main_imgs" property="mainImgs"  />
+    <result column="total" property="total"  />
+    <result column="main_imgs_big" property="mainImgsBig"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+   main_imgs_big,total, uuid,brand_ids,name,is_top,brand_name,brand_id,is_online,storage,status,order_by,key_words,ldesc_mobile,ldesc_pc,create_time,update_time,record_status,code,product_code,storage_alert,integral,module_id,imgs,imgs_main,category_ids,category_id,detail_imgs,main_imgs
+      </sql>
+
+  <select id="getProductCategory" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    a.detail_imgs,a.main_imgs, a.uuid,a.brand_ids,a.name,a.is_top,a.brand_name,a.brand_id,a.is_online,a.storage,a.status,a.order_by,a.key_words,a.ldesc_mobile,a.ldesc_pc,a.create_time,a.update_time,a.record_status,a.code,a.product_code,a.storage_alert,a.integral,a.module_id,a.imgs,a.imgs_main,a.category_ids
+    from tb_product a,tb_product_category_link b
+    where b.category_id=#{categoryId}
+    and record_status = 1
+    and a.uuid=b.product_id
+  </select>
+
+
+
+
+  <select id="getProductCategoryPid" resultMap="BaseResultMap" parameterType="rml.model.Product" >
+    select
+    a.detail_imgs,a.main_imgs, a.uuid,a.brand_ids,a.name,a.is_top,a.brand_name,a.brand_id,a.is_online,a.storage,a.status,a.order_by,a.key_words,a.ldesc_mobile,a.ldesc_pc,a.create_time,a.update_time,a.record_status,a.code,a.product_code,a.storage_alert,a.integral,a.module_id,a.imgs,a.imgs_main,a.category_ids
+    from tb_product a,tb_product_category_link b,tb_product_category c
+    where b.category_id=c.uuid
+    and a.record_status = 1
+    and a.uuid=b.product_id
+    and c.uuid = #{categoryId}
+    order by create_time desc
+  </select>
+
+  <select id="getProductCategoryPidCount" resultMap="BaseResultMap" parameterType="rml.model.Product" >
+    select count(1) as total
+    from tb_product a,tb_product_category_link b,tb_product_category c
+    where b.category_id=c.uuid
+    and a.record_status = 1
+    and a.uuid=b.product_id
+    and c.uuid = #{categoryId}
+  </select>
+
+  <select id="getProduct" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product
+    where uuid=#{uuid}
+    and record_status = 1
+  </select>
+
+
+  <select id="getProducts" resultMap="BaseResultMap" parameterType="rml.model.Product" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product
+    where module_id=#{moduleId}
+    and record_status = 1
+    and type=#{type}
+    order by create_time desc
+    limit #{startSize},#{pageSize}
+  </select>
+
+  <select id="getProductsAll" resultType="java.lang.Integer" parameterType="rml.model.Product" >
+    select
+      count(uuid)
+    from tb_product
+    where module_id=#{moduleId}
+    and record_status = 1
+    and type = #{type}
+  </select>
+
+  <select id="getProductBrandUUID" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product_brand
+    where uuid=#{uuid}
+    and record_status = 1
+  </select>
+
+  <insert id="updateBrand" parameterType="rml.model.ProductBrand" >
+    UPDATE tb_product_brand set name = #{name},order_by = #{order} where uuid=#{uuid}
+  </insert>
+
+  <insert id="updateImgsMain" parameterType="rml.model.Product" >
+    UPDATE tb_product set imgs_main = #{imgsMain} where uuid=#{uuid}
+  </insert>
+
+
+  <insert id="updateDetailImgs" parameterType="rml.model.Product" >
+    UPDATE tb_product set detail_imgs = #{imgs} where uuid=#{uuid}
+  </insert>
+
+
+  <insert id="updateMainImgs" parameterType="rml.model.Product" >
+    UPDATE tb_product set main_imgs = #{imgsMain} where uuid=#{uuid}
+  </insert>
+
+  <insert id="updateImgs" parameterType="rml.model.Product" >
+    UPDATE tb_product set imgs = #{imgs} where uuid=#{uuid}
+  </insert>
+
+  <insert id="deleteBrand" parameterType="rml.model.ProductBrand" >
+    UPDATE tb_product_brand set record_status = 0 WHERE uuid=#{uuid}
+  </insert>
+
+  <insert id="insert" parameterType="rml.model.Product" >
+    insert into tb_product(uuid,is_top,name,brand_name,brand_id,is_online,storage,status,order_by,key_words,ldesc_mobile,ldesc_pc,create_time,record_status,code,product_code,storage_alert,integral,module_id,imgs,imgs_main,category_id,brand_ids,category_ids,type,detail_imgs,main_imgs,main_imgs_big)
+    values(#{uuid},#{isTop},#{name},#{brandName},#{brandId},1,#{storage},#{status},#{order},#{keyWords},#{ldescMobile},#{ldescPc},#{createTime},1,#{code},#{productCode},#{storageAlert},#{integral},#{moduleId},#{imgs},#{imgsMain},#{categoryId},#{brandIds},#{categoryIds},#{type},#{detailImgs},#{mainImgs},#{mainImgsBig})
+  </insert>
+
+  <select id="getProductFront" resultMap="BaseResultMap" parameterType="rml.model.Product" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product
+    where is_top=1
+    and record_status = 1
+    order by order_by
+    limit #{startSize},#{pageSize}
+  </select>
+
+  <select id="getProductFrontAll" resultType="java.lang.Integer" parameterType="java.lang.String" >
+    select count(uuid)
+      from tb_product
+     where is_top=1
+  and record_status = 1
+  </select>
+
+
+  <insert id="update" parameterType="rml.model.Product" >
+    update tb_product set name=#{name},is_top=#{isTop},brand_name=#{brandName},brand_id=#{brandId},is_online=#{isOnline},storage=#{storage},status=#{status},order_by=#{order},key_words=#{keyWords},ldesc_mobile=#{ldescMobile},ldesc_pc=#{ldescPc}
+    ,create_time=#{createTime},code=#{productCode},storage_alert=#{storageAlert},integral=#{integral},imgs=#{imgs},imgs_main=#{imgsMain},category_id=#{categoryId},brand_ids=#{brandIds},category_ids=#{categoryIds},detail_imgs=#{detailImgs},main_imgs=#{mainImgs},main_imgs_big=#{mainImgsBig}
+    where uuid=#{uuid}
+  </insert>
+
+  <insert id="deleteProduct" parameterType="java.lang.String" >
+    UPDATE tb_product set record_status = 0 WHERE uuid=#{uuid}
+  </insert>
+
+  <select id="getProductsTotal" resultMap="BaseResultMap" parameterType="rml.model.Product" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product
+    where module_id=#{moduleId}
+    and record_status = 1
+  </select>
+
+
+  <select id="queryProductSearch" resultMap="BaseResultMap" parameterType="rml.model.Product" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product
+    where name like CONCAT('%','${name}','%' )
+    and record_status = 1
+    order by order_by
+    limit #{startSize},#{pageSize}
+  </select>
+
+
+  <select id="queryProductSearchTotal" resultMap="BaseResultMap" parameterType="rml.model.Product" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_product
+    where name like CONCAT('%','${name}','%' )
+    and record_status = 1
+  </select>
+
+
+  <select id="getFrontAll" resultType="java.lang.Integer" parameterType="java.lang.String" >
+    select
+    count(uuid)
+    from tb_product
+    where module_id=#{moduleId}
+    and record_status = 1
+  </select>
+
+
+  <select id="searchBrand" resultMap="BaseResultMap" parameterType="rml.model.Product" >
+    select
+    a.detail_imgs,a.main_imgs, a.uuid,a.brand_ids,a.name,a.is_top,a.brand_name,a.brand_id,a.is_online,a.storage,a.status,a.order_by,a.key_words,a.ldesc_mobile,a.ldesc_pc,a.create_time,a.update_time,a.record_status,a.code,a.product_code,a.storage_alert,a.integral,a.module_id,a.imgs,a.imgs_main,a.category_ids
+    from   tb_product_brand_link b,tb_product a,tb_product_brand c
+    where  b.product_id = a.uuid
+    and b.brand_id = c.uuid
+    and c.name like CONCAT('%','${name}','%' )
+    and a.record_status = 1
+    order by a.create_time desc
+    limit #{startSize},#{pageSize}
+  </select>
+</mapper>

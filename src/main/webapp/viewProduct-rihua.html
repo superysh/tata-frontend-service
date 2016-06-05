@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>jQuery UI Tabs - Default functionality</title>
+    <link rel="stylesheet" href="css/jquery-ui.min.css">
+
+    <!-- CSS adjustments for browsers with JavaScript disabled -->
+    <script language="JavaScript" src="js/jquery.js"></script>
+   <script language="JavaScript" src="js/config-all.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script>
+        $(function() {
+            $("#tabs" ).tabs();
+        });
+        </script>
+</head>
+<body>
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-1">基本信息</a></li>
+        <li><a href="#tabs-2">商品属性</a></li>
+        <li><a href="#tabs-3">商品详情</a></li>
+        <li><a href="#tabs-4">商品主图片</a></li>
+        <li><a href="#tabs-5">商品图片</a></li>
+    </ul>
+    <div id="tabs-1">
+        <form class="cmxform" id="commentForm" method="get" action="">
+            <table>
+                <tr>
+                    <td>商品名称&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="name" readonly></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr></tr>
+                <tr style="background: whitesmoke" id="content">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr style="background: whitesmoke" id="tip" style="font-size: 0.75em">
+                    <td>选择的分类为<input type="text" readonly id="categoryValue">
+                    <td></td>
+                    <td></td>
+
+                </tr>
+
+                <tr style="background: whitesmoke"  style="font-size: 0.75em">
+                    <td>商品品牌&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="brand" readonly></td>
+                    <td>库存数量:<input id="storage" readonly></td>
+                    <td></td>
+                </tr>
+                <tr style="background: whitesmoke"  style="font-size: 0.75em">
+                    <td>是否上架销售&nbsp;&nbsp;<input type="text" readonly id="isOnline"> </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+
+                <tr style="background: whitesmoke"  style="font-size: 0.75em">
+                    <td>商品状态&nbsp;&nbsp;<label><input name="status" type="checkbox" value="1" />促销 </label>
+                        <label><input name="status" type="checkbox" value="2" />热卖 </label>
+                        <label><input name="status" type="checkbox" value="3" />新品 </label>
+                        <label><input name="status" type="checkbox" value="4" />团购 </label>
+                        <label><input name="status" type="checkbox" value="5" />众筹</label>
+                        <label><input name="status" type="checkbox" value="6" />秒杀 </label>
+                        <label><input name="status" type="checkbox" value="7" />限购 </label>
+                        <label><input name="status" type="checkbox" value="8" />试用 </label>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr style="background: whitesmoke"  style="font-size: 0.75em" number>
+                    <td>排序&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="order" id="order" > </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr style="background: whitesmoke"  style="font-size: 0.75em">
+                    <td>商品关键词:&nbsp;&nbsp;&nbsp;<input type="text" name="keywords" id="keywords"> </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr style="background: whitesmoke"  style="font-size: 0.75em">
+                    <td> </td>
+                    <td></td>
+                    <td><input type="button" name="order" onclick="add();" value="添加"></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div id="tabs-2">
+        <table id="property">
+            <tr style="background: whitesmoke"  style="font-size: 0.75em">
+                <td>库存警告:&nbsp;<input type="text" name="storageAlert" id="storageAlert"  > </td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    <div id="tabs-3">
+        <div id="editor">
+
+        </div>
+        PC端内容:<input type="radio" name="type" checked value="0" >H5端内容: <input type="radio" name="type"  value="'1" >
+    </div>
+    <div id="tabs-4">
+            <div >
+                <table id="slides"></table>
+            </div>
+    </div>
+<div id="tabs-5">
+        <div>
+            <table id="slides1"></table>
+        </div>
+</div>
+</div>
+</body>
+
+
+
+<script type="text/javascript">
+    function GetRequest(strName)
+    {
+        var strHref = window.location.href; //获取Url字串
+        var intPos = strHref.indexOf("?");  // 参数开始位置
+        var strRight = strHref.substr(intPos + 1);
+        var arrTmp = strRight.split(","); //参数分割符
+        for(var i = 0; i < arrTmp.length; i++)
+        {
+            var arrTemp = arrTmp[i].split("=");
+            if(arrTemp[0].toUpperCase() == strName.toUpperCase()) return arrTemp[1];
+        }
+        return "";
+    }
+
+    var uuid = GetRequest("uuid");
+    jQuery.ajax({
+        type: "GET",
+        url: baseUrl + "/Product/Product/Front",
+        data: {"uuid": uuid},
+        dataType: "json",
+        success: function (data, status, jqXHR) {
+            var info = data.returnObject;
+            console.info(info);
+            $("#name").val(info.name);
+            $("#brand").val(info.brandName);
+            $("#storageAlert").val(info.storageAlert);
+            $("#storage").val(info.storage);
+            $("#order").val(info.order);
+            $("#keywords").val(info.keyWords);
+            if(info.isOnline==0){
+                $("#isOnline").val("下架")
+            }else{
+                $("#isOnline").val("上架")
+            }
+            jQuery.ajax({
+                type: "GET",
+                url: baseUrl + "/Category/Category",
+                data: {"uuid":info.categoryId},
+                dataType: "json",
+                success: function (data, status, jqXHR) {
+                    $("#categoryValue").val(data.returnObject.name);
+                },
+                error: ''
+            });
+            $(info.propertyValues).each(function(index,element){
+                var count = $("#propertyCount").val();
+                ++count;
+                var selObj = $("#key"+count);
+                var tr = "<tr style='background: whitesmoke'  style='font-size: 0.75em'><td>商品属性: &nbsp;<input type='text' readonly value='"+element.propertyKey+"'></td><td>属性值:<input type='text' id='value' value='"+element.propertyValue+"'> </td><td>价格:<input type='text' id='price' value='"+element.price/100+"'> </td></tr>";
+                var ul = $(tr).appendTo($("#property"));
+            });
+            var imgs = info.imgsMain.split(",");
+            $(imgs).each(function(index,element){
+                var tr = '<tr><td><img src="'+element+'" /> </td></tr>';
+                $(tr).appendTo($("#slides"));
+            });
+            var img = info.imgs.split(",");
+            $(img).each(function(index,element1){
+                var tr = '<tr><td><img src="'+element1+'" /> </td></tr>';
+                $(tr).appendTo($("#slides1"));
+            });
+        },
+        error: ''
+    });
+
+</script>
+
+</html>

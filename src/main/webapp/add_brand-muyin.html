@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    div{font-size:0.8em;font-family: 'Trebuchet MS', sans-serif;}
+    td{font-size:0.8em;font-family: 'Trebuchet MS', sans-serif;}
+</style>
+<script language="JavaScript" src="js/jquery.min-2.js"></script>
+<script language="JavaScript" src="js/config.js"></script>
+<script language="JavaScript" src="js/layer/layer.js"></script>
+<script language="JavaScript" src="js/layer/extend/layer.ext.js"></script>
+<div style="float: left;"><strong>[编辑商品品牌]</strong></div><div  style="position:relative;float: right"><img src="images/close1.png"  onclick="close1()"/></div>
+<br>
+
+    <div id="title"></div>
+<table>
+   <td>
+    <tr>
+        <td style="font-size: 0.75em">品牌名称:</td>
+        <td><input type="text" id="name"></td>
+    </tr>
+   </td>
+    </p>
+    <tr>
+        <td style="font-size: 0.75em">品牌排序:</td>
+        <td>
+            <select id="order">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+            </select>
+            <button id="submit" onclick="goLink()" >提交</button>
+        </td>
+
+
+    </tr>
+</table>
+
+</body>
+<script>
+
+    var name = GetRequest("name");
+    var order = GetRequest("order");
+    var uuid = GetRequest("uuid");
+    $("#name").val(decodeURI(name));
+    $("#order").val(order);
+    function GetRequest(strName)
+    {
+        var strHref = window.location.href; //获取Url字串
+        var intPos = strHref.indexOf("?");  // 参数开始位置
+        var strRight = strHref.substr(intPos + 1);
+        var arrTmp = strRight.split(","); //参数分割符
+        for(var i = 0; i < arrTmp.length; i++)
+        {
+            var arrTemp = arrTmp[i].split("=");
+            if(arrTemp[0].toUpperCase() == strName.toUpperCase()) return arrTemp[1];
+        }
+        return "";
+    }
+
+    function goLink() {
+        if (name == null) {
+            layer.msg('商品品牌不得为空', {icon: 5});
+            return;
+        }
+        jQuery.ajax({
+            type: "POST",
+            url: baseUrl + "/Product/Brand",
+            contentType: 'application/json;charset=UTF-8',
+            data: JSON.stringify({"uuid": uuid, "name": $("#name").val(), "order":$("#order").val(),"moduleId":"3","moduleName":"他它母婴"}),
+            dataType: "json",
+            success: function (data, status, jqXHR) {
+                layer.msg('修改成功', {icon: 4});
+            },
+            error: ''
+        });
+    }
+
+    function close(){
+        layer.close();
+        parent.location="brandList-muyin.html";
+    }
+
+    function close1(){
+        layer.close();
+        parent.location="brandList-muyin.html";
+    }
+</script>
+
+<div id="result">
+
+</div>
+
+</html>
