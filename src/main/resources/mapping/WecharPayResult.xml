@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="rml.dao.WechatPayResultMapper" >
+	<resultMap id="BaseResultMap" type="rml.model.WechatPayResult">
+	<id column="id"	property="id"/>
+	<result column="out_trade_no"	property="outTradeNo"/>
+	<result column="appid"	property="appid"/>
+	<result column="mch_id"	property="mchId"/>
+	<result column="device_info"	property="deviceInfo"/>
+	<result column="nonce_str"	property="nonceStr"/>
+	<result column="sign"	property="sign"/>	
+	<result column="result_code"	property="resultCode"/>
+	<result column="err_code"	property="errCode"/>	
+	<result column="err_code_des"	property="errCodeDes"/>
+	<result column="openid"	property="openid"/>
+	<result column="is_subscribe"	property="isSubscribe"/>
+	<result column="trade_type"	property="tradeType" />
+	<result column="bank_type"	property="bankType" />
+	<result column="total_fee"	property="totalFee" />		
+	<result column="fee_type"	property="feeType" />	
+	<result column="cash_fee"	property="cashFee" />       
+	<result column="cash_fee_type"	property="cashFeeType" />	
+	<result column="coupon_fee"	property="couponFee" />
+	<result column="coupon_count"	property="couponCount" />	
+	<result column="coupon_id"	property="couponId" />	
+	<result column="coupon_fee_single"	property="couponFeeSingle" />		
+	<result column="transaction_id"	property="transactionId" />	
+	<result column="attach"	property="attach" />	
+	<result column="time_end"	property="timeEnd" />	
+	<result column="create_time"	property="createTime" />   
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+	id,out_trade_no,appid,mch_id,device_info,nonce_str,sign,result_code,err_code,err_code_des,openid,is_subscribe,trade_type,bank_type,	
+	total_fee,fee_type,cash_fee,cash_fee_type,coupon_fee,coupon_count,coupon_id,coupon_fee_single,	transaction_id,	attach,time_end,create_time
+  </sql>
+
+
+  <select id="getWechatPayResultByOrderNo" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_wechat_pay_result where out_trade_no=#{outTradeNo}
+  </select>
+
+  <insert id="insert" parameterType="rml.model.WechatPayResult" >
+    insert into tb_wechat_pay_result (out_trade_no,appid,mch_id,device_info,nonce_str,sign,result_code,err_code,err_code_des,openid,is_subscribe,trade_type,bank_type,	
+	total_fee,fee_type,cash_fee,cash_fee_type,coupon_fee,coupon_count,coupon_id,coupon_fee_single,	transaction_id,	attach,time_end,create_time)
+    values (#{outTradeNo},#{appid},#{mchId},#{deviceInfo},#{nonceStr},#{sign},#{resultCode},#{errCode},#{errCodeDes},#{openid},#{isSubscribe},#{tradeType},#{bankType},	
+	#{totalFee},#{feeType},#{cashFee},#{cashFeeType},#{couponFee},#{couponCount},#{couponId},#{couponFeeSingle},#{transactionId},#{attach},#{timeEnd},#{createTime})
+  </insert>
+  
+  <select id="delete"  parameterType="java.lang.String" >
+    delete from tb_wechat_pay_result where out_trade_no=#{outTradeNo}
+  </select>
+
+
+</mapper>
