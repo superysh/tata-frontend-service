@@ -47,7 +47,7 @@ public class WechatPayController {
 	public static final String partner = "1336678701";//商户号  
 	public static final String partnerkey ="hTc8o0xZpy2v48q9XL1l6wq2rEc5x3m0";//不是商户登录密码，是商户在微信平台设置的32位长度的api秘钥，  
 	public static final String createOrderURL = "https://api.mch.weixin.qq.com/pay/unifiedorder";  
-	public static final String notify_url = "http://fw.tata168.com/tata/wechatpay/notify.html";//异步通知地址  
+	public static final String notify_url = "http://fw.tata168.com/tatatest/wechatpay/notify.html";//异步通知地址  
 
 	@RequestMapping(value = "/topay")   
 	@ResponseBody 
